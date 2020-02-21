@@ -17,13 +17,23 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExampleComponent } from 'app/pages/example/example.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
 
+import { SocialLoginModule, AuthServiceConfig, GoogleLoginProvider } from 'angular4-social-login';
+
+
+const google_auth_id = '991734157670-5vj2she2npal2m9bv4vobd5btd8geps8.apps.googleusercontent.com';
+const config = new AuthServiceConfig([{
+  id: GoogleLoginProvider.PROVIDER_ID,
+  provider: new GoogleLoginProvider(google_auth_id)
+}]);
+
 @NgModule({
   imports: [
     CommonModule,
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    SocialLoginModule.initialize(config)
   ],
   declarations: [
     DashboardComponent,
@@ -35,7 +45,8 @@ import { AuthComponent } from 'app/pages/auth/auth.component';
     MapsComponent,
     NotificationsComponent,
     ExampleComponent
-  ]
+  ],
+  bootstrap: [AuthComponent]
 })
 
 export class AdminLayoutModule {}
