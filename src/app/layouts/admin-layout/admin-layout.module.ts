@@ -25,6 +25,9 @@ const config = new AuthServiceConfig([{
   id: GoogleLoginProvider.PROVIDER_ID,
   provider: new GoogleLoginProvider(google_auth_id)
 }]);
+export function provideConfig() {
+  return config;
+}
 
 @NgModule({
   imports: [
@@ -33,7 +36,7 @@ const config = new AuthServiceConfig([{
     FormsModule,
     ReactiveFormsModule,
     NgbModule,
-    SocialLoginModule.initialize(config)
+    SocialLoginModule
   ],
   declarations: [
     DashboardComponent,
@@ -45,7 +48,7 @@ const config = new AuthServiceConfig([{
     MapsComponent,
     NotificationsComponent,
     ExampleComponent
-  ],
+  ], providers: [{ provide: AuthServiceConfig, useFactory: provideConfig }],
   bootstrap: [AuthComponent]
 })
 
