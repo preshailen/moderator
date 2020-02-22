@@ -9,9 +9,10 @@ import { NotificationsComponent } from '../../pages/notifications/notifications.
 import { UpgradeComponent } from '../../pages/upgrade/upgrade.component';
 import { ExampleComponent } from 'app/pages/example/example.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
+import { AuthGuard } from 'app/_guards/auth.guard';
 
 export const AdminLayoutRoutes: Routes = [
-    { path: 'auth', component: AuthComponent },
+    { path: 'auth', component: AuthComponent, resolve: {reward: AuthGuard}, },
     { path: 'dashboard',      component: DashboardComponent },
     { path: 'user',           component: UserComponent },
     { path: 'table',          component: TableComponent },
@@ -20,4 +21,5 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'notifications',  component: NotificationsComponent },
     { path: 'upgrade',        component: UpgradeComponent },
     { path: 'example', component: ExampleComponent }
+
 ];

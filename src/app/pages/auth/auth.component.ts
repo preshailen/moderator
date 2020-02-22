@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AlertService } from 'app/_services/alert.service';
-import { AuthService, GoogleLoginProvider } from 'angular4-social-login';
+import { environment } from 'environments/environment';
+import { GoogleLoginProvider, AuthService } from 'angularx-social-login';
+import { DriveService } from 'app/_services/drive.service';
 
 @Component({
   selector: 'app-auth',
@@ -9,24 +10,24 @@ import { AuthService, GoogleLoginProvider } from 'angular4-social-login';
   styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent implements OnInit {
-  loginForm: FormGroup;
   user: any;
-  constructor(public as: AlertService, private _as: AuthService) { }
+  loggedIn: boolean;
+  constructor(private _as_: AuthService, public as: AlertService, public ds: DriveService) { }
 
   ngOnInit() {
-    this.loginForm = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required])
-    });
   }
-  login(platform: string) {
-    platform = GoogleLoginProvider.PROVIDER_ID;
-    this._as.signIn(platform).then(p => { console.log(p); this.user = p; });
+  login(): void {
+    this._as_.signIn(GoogleLoginProvider.PROVIDER_ID).then(
+      h => {
+        console.log(h);
+        this.ds.listFiles();
+      } ,
+      err => console.log(err)
+    ).catch(e => console.log(e));
+  }
+  logout(): void {
+    this._as_.signOut();
+  }
 
-  }
-  signOut()
-  {
-    this._as.signOut();
-  }
 
 }
