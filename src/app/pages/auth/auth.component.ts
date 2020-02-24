@@ -19,8 +19,7 @@ export class AuthComponent implements OnInit {
   login(): void {
     this._as_.signIn(GoogleLoginProvider.PROVIDER_ID).then(
       h => {
-        console.log(h);
-        this.ds.listFiles();
+        localStorage.setItem('authToken', h.authToken);
       } ,
       err => console.log(err)
     ).catch(e => console.log(e));

@@ -1,4 +1,4 @@
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,31 +16,29 @@ import { UpgradeComponent } from '../../pages/upgrade/upgrade.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExampleComponent } from 'app/pages/example/example.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
-import { AuthGuard } from 'app/_guards/auth.guard';
-import { GapiSession } from 'app/infrastructure/sessions/gapi.session';
-import { LoggedInGuard } from 'app/infrastructure/sessions/loggedInGuard';
-import { AppContext } from 'app/infrastructure/app.context';
-import { AppSession } from 'app/infrastructure/sessions/app.session';
-import { FileSession } from 'app/infrastructure/sessions/file.session';
-import { UserSession } from 'app/infrastructure/sessions/user.session';
-import { AppRepository } from 'app/infrastructure/repositories/app.repository';
-import { BreadCrumbSession } from 'app/infrastructure/sessions/breadcrumb.session';
-import { FileRepository } from 'app/infrastructure/repositories/file.repository';
-import { UserRepository } from 'app/infrastructure/repositories/user.repository';
+import { GoogleLoginProvider, AuthServiceConfig, LoginOpt, SocialLoginModule } from 'angularx-social-login';
+import { FilesComponent } from 'app/pages/files/files.component';
 
-export function initGapi(gapiSession: GapiSession) {
-  return () => gapiSession.initClient();
+const googleLoginOptions: LoginOpt = {
+  prompt: 'consent',
+  // tslint:disable-next-line: max-line-length
+  scope: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.photos.readonly https://www.googleapis.com/auth/drive.readonly'
+};
+const config = new AuthServiceConfig([{
+  id: GoogleLoginProvider.PROVIDER_ID,
+  provider: new GoogleLoginProvider('991734157670-5vj2she2npal2m9bv4vobd5btd8geps8.apps.googleusercontent.com', googleLoginOptions)
+}]);
+export function providConfig() {
+  return config;
 }
-
-
-
 @NgModule({
   imports: [
     CommonModule,
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    SocialLoginModule
   ],
   declarations: [
     DashboardComponent,
@@ -51,20 +49,10 @@ export function initGapi(gapiSession: GapiSession) {
     AuthComponent,
     MapsComponent,
     NotificationsComponent,
-    ExampleComponent
+    ExampleComponent,
+    FilesComponent
   ], providers: [
-    LoggedInGuard,
-    { provide: APP_INITIALIZER, useFactory: initGapi, deps: [GapiSession], multi: true},
-    AppContext,
-    AppSession,
-    FileSession,
-    GapiSession,
-    UserSession,
-    AppRepository,
-    BreadCrumbSession,
-    FileRepository,
-    UserRepository
-
+    { provide: AuthServiceConfig, useFactory: providConfig }
   ],
   bootstrap: [AuthComponent]
 })
