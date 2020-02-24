@@ -9,17 +9,17 @@ import { NotificationsComponent } from '../../pages/notifications/notifications.
 import { UpgradeComponent } from '../../pages/upgrade/upgrade.component';
 import { ExampleComponent } from 'app/pages/example/example.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
-import { AuthGuard } from 'app/_guards/auth.guard';
+import { LoggedInGuard } from 'app/infrastructure/sessions/loggedInGuard';
 
 export const AdminLayoutRoutes: Routes = [
-    { path: 'auth', component: AuthComponent, resolve: {reward: AuthGuard}, },
-    { path: 'dashboard',      component: DashboardComponent },
-    { path: 'user',           component: UserComponent },
-    { path: 'table',          component: TableComponent },
-    { path: 'icons',          component: IconsComponent },
-    { path: 'maps',           component: MapsComponent },
-    { path: 'notifications',  component: NotificationsComponent },
-    { path: 'upgrade',        component: UpgradeComponent },
-    { path: 'example', component: ExampleComponent }
+    { path: 'auth', component: AuthComponent},
+    { path: 'dashboard',   canActivate: [LoggedInGuard],     component: DashboardComponent },
+    { path: 'user',       canActivate: [LoggedInGuard],      component: UserComponent },
+    { path: 'table',   canActivate: [LoggedInGuard],         component: TableComponent },
+    { path: 'icons',   canActivate: [LoggedInGuard],         component: IconsComponent },
+    { path: 'maps',      canActivate: [LoggedInGuard],       component: MapsComponent },
+    { path: 'notifications',  canActivate: [LoggedInGuard],  component: NotificationsComponent },
+    { path: 'upgrade',     canActivate: [LoggedInGuard],     component: UpgradeComponent },
+    { path: 'example', canActivate: [LoggedInGuard],  component: ExampleComponent }
 
 ];

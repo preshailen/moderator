@@ -13,6 +13,13 @@ export class DriveService {
   listFiles(): Promise<any[]> {
     return this.http.get<any[]>(this.baseUrl + 'files').toPromise();
   }
+  loggedIn(): boolean {
+    if (localStorage.getItem('auth') && localStorage.getItem('auth').toString() === 'auth') {
+      return true;
+    } else {
+      return false;
+    }
+  }
   /*addPartners(model: Partner[]): Promise<boolean> {
     return this.http.post<boolean>(this.baseUrl + 'addRedemptionPartners/' + localStorage.getItem('merchantNo'), model).toPromise();
   }

@@ -11,12 +11,14 @@ import { AppRoutes } from './app.routing';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { HttpClientModule } from '@angular/common/http';
+import { BreadcrumbComponent } from './pages/breadcrumb/breadcrumb.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
+    BreadcrumbComponent
   ],
   imports: [
     BrowserAnimationsModule,

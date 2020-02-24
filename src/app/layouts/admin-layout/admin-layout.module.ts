@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,19 +17,22 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ExampleComponent } from 'app/pages/example/example.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
 import { AuthGuard } from 'app/_guards/auth.guard';
+import { GapiSession } from 'app/infrastructure/sessions/gapi.session';
+import { LoggedInGuard } from 'app/infrastructure/sessions/loggedInGuard';
+import { AppContext } from 'app/infrastructure/app.context';
+import { AppSession } from 'app/infrastructure/sessions/app.session';
+import { FileSession } from 'app/infrastructure/sessions/file.session';
+import { UserSession } from 'app/infrastructure/sessions/user.session';
+import { AppRepository } from 'app/infrastructure/repositories/app.repository';
+import { BreadCrumbSession } from 'app/infrastructure/sessions/breadcrumb.session';
+import { FileRepository } from 'app/infrastructure/repositories/file.repository';
+import { UserRepository } from 'app/infrastructure/repositories/user.repository';
 
-import { SocialLoginModule, AuthServiceConfig, GoogleLoginProvider } from 'angularx-social-login';
-const googleLoginOptions = {
-  prompt: 'consent',
-  scope: 'https://www.googleapis.com/auth/drive'
-};
-const config = new AuthServiceConfig([{
-    id: GoogleLoginProvider.PROVIDER_ID,
-    provider: new GoogleLoginProvider('991734157670-5vj2she2npal2m9bv4vobd5btd8geps8.apps.googleusercontent.com', googleLoginOptions)
-}]);
-export function provideConfig() {
-  return config;
+export function initGapi(gapiSession: GapiSession) {
+  return () => gapiSession.initClient();
 }
+
+
 
 @NgModule({
   imports: [
@@ -37,8 +40,7 @@ export function provideConfig() {
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
     ReactiveFormsModule,
-    NgbModule,
-    SocialLoginModule
+    NgbModule
   ],
   declarations: [
     DashboardComponent,
@@ -51,8 +53,18 @@ export function provideConfig() {
     NotificationsComponent,
     ExampleComponent
   ], providers: [
-    AuthGuard,
-    { provide: AuthServiceConfig, useFactory: provideConfig }
+    LoggedInGuard,
+    { provide: APP_INITIALIZER, useFactory: initGapi, deps: [GapiSession], multi: true},
+    AppContext,
+    AppSession,
+    FileSession,
+    GapiSession,
+    UserSession,
+    AppRepository,
+    BreadCrumbSession,
+    FileRepository,
+    UserRepository
+
   ],
   bootstrap: [AuthComponent]
 })

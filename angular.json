@@ -26,6 +26,7 @@
               "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
+              "src/assets/google.uploader.js"
             ]
           },
           "configurations": {
