@@ -1,5 +1,7 @@
 <div *ngIf="configured">
-    SETUP
+    <div class="teacher">
+
+    </div>
 </div>
 <div class="row" *ngIf="!configured">
   <div class="col-md-12">
@@ -22,7 +24,7 @@
                       <option *ngFor="let r of roles" [ngValue]="r"> {{ r }}</option>
                     </select>
                   </div>
-                </form>                 
+                </form>
               </div>
               <div id="foot" class="modal-footer">
                   <button id="btnAdd" (click)="createConfig()" class="btn btn-out btn-success">Configure</button>

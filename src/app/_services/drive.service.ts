@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { File } from '../models/file.class';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -19,20 +18,28 @@ export class DriveService {
     };
     return this.http.get<any>('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, this.options).toPromise();
   }
-  addFile(name: string) {
+  addConfig(name: string, role: string): void {
     this.options = {
       headers: new HttpHeaders({
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
         'Content-Type': 'application/json'
       })
     };
-    // tslint:disable-next-line: max-line-length
-    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', { name: name }, this.options).toPromise().then(
-      (val) => {
-        console.log(val);
-        // return this.http.post(url, file, this.options).toPromise();
+    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', { 'role': role } , this.options).toPromise().then(
+      c => {
+        this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id, { 'name': name }, this.options).toPromise().then(
+          v => console.log(v)
+        );
       }
     );
+  }
+  getFile(id: string): Promise<any> {
+    this.options = {
+      headers: new HttpHeaders({
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+      })
+    };
+    return this.http.get<any>('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', this.options).toPromise();
   }
   loggedIn(): boolean {
     if (localStorage.getItem('authToken')) {
