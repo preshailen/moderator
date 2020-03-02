@@ -10,11 +10,16 @@ import { UpgradeComponent } from '../../pages/upgrade/upgrade.component';
 import { ExampleComponent } from 'app/pages/example/example.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
 import { FilesComponent } from 'app/pages/files/files.component';
+import { AuthGuard } from 'app/_services/auth.guard';
+import { AdminComponent } from 'app/pages/admin/admin.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'auth', component: AuthComponent},
-    { path: 'files', component: FilesComponent },
-    { path: 'dashboard',  component: DashboardComponent },
+    { path: 'files', canActivate: [AuthGuard], component: FilesComponent },
+    { path: 'admin', canActivate: [AuthGuard], component: AdminComponent },
+
+
+
     { path: 'user', component: UserComponent },
     { path: 'table', component: TableComponent },
     { path: 'icons', component: IconsComponent },

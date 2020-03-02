@@ -15,18 +15,20 @@ export class AuthComponent implements OnInit {
   constructor(private _as_: AuthService, public as: AlertService, public ds: DriveService) { }
 
   ngOnInit() {
+      this.loggedIn = this.ds.loggedIn();
   }
   login(): void {
     this._as_.signIn(GoogleLoginProvider.PROVIDER_ID).then(
       h => {
         localStorage.setItem('authToken', h.authToken);
+        this.loggedIn = true;
       } ,
       err => console.log(err)
     ).catch(e => console.log(e));
   }
   logout(): void {
+    this.loggedIn = false;
+    localStorage.removeItem('authToken');
     this._as_.signOut();
   }
-
-
 }

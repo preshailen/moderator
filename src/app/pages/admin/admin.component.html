@@ -1,0 +1,35 @@
+<div *ngIf="configured">
+    SETUP
+</div>
+<div class="row" *ngIf="!configured">
+  <div class="col-md-12">
+    <div class="card card-user">
+      <div class="card-header form-group">
+          <div class="update ml-auto mr-auto">
+            <button type="button" class="btn btn-success btn-round" (click)="setup(content)">Setup Drive</button>
+            <ng-template #content>
+              <div id="head" class="modal-header">
+                  <button id="close" type="button" class="close" aria-label="Close" (click)="close('close')">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <h4 id="title" class="modal-title">Configure account</h4>
+              </div>
+              <div id="body" class="modal-body">
+                <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="createConfig()">
+                  <div class="input-item">
+                    <h6>Role</h6>
+                    <select class="form-control" formControlName="role" required>
+                      <option *ngFor="let r of roles" [ngValue]="r"> {{ r }}</option>
+                    </select>
+                  </div>
+                </form>                 
+              </div>
+              <div id="foot" class="modal-footer">
+                  <button id="btnAdd" (click)="createConfig()" class="btn btn-out btn-success">Configure</button>
+              </div>
+            </ng-template>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

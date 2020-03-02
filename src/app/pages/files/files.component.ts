@@ -10,21 +10,19 @@ export class FilesComponent implements OnInit {
   signedIn: boolean = null;
   files: File[] = [];
 
-  constructor(private ds: DriveService) { }
+  constructor(public ds: DriveService) { }
 
   ngOnInit() {
-    this.ds.listFiles().then(
-      v => {
-        if (v.files.length > 0) {
+    if (this.ds.loggedIn()) {
+      this.ds.listFiles().then(
+        v => {
+          console.log(v);
           for (let d = 0; d < v.files.length; d++) {
             this.files.push(v.files[d]);
           }
-          this.signedIn = true;
-        } else {
-          this.signedIn = false;
         }
-      }
-    );
+      );
+    }
   }
 
 }

@@ -18,6 +18,8 @@ import { ExampleComponent } from 'app/pages/example/example.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
 import { GoogleLoginProvider, AuthServiceConfig, LoginOpt, SocialLoginModule } from 'angularx-social-login';
 import { FilesComponent } from 'app/pages/files/files.component';
+import { AuthGuard } from 'app/_services/auth.guard';
+import { AdminComponent } from 'app/pages/admin/admin.component';
 
 const googleLoginOptions: LoginOpt = {
   prompt: 'consent',
@@ -50,8 +52,10 @@ export function providConfig() {
     MapsComponent,
     NotificationsComponent,
     ExampleComponent,
+    AdminComponent,
     FilesComponent
   ], providers: [
+    AuthGuard,
     { provide: AuthServiceConfig, useFactory: providConfig }
   ],
   bootstrap: [AuthComponent]

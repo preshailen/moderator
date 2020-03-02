@@ -1,0 +1,27 @@
+h5, .form-group {
+  text-align: center;
+}
+#head {
+  padding: .4rem;
+  display: block;
+  #title {
+     text-align: center;
+  }
+  #close {
+     padding: 0% 5% 0% 95%;
+     margin: 0 auto;
+  }
+}
+#body {
+  .input-item {
+    display: block;
+    h4, h6 {
+      text-align: center;
+      padding-top: .5rem;
+    }
+  }
+}
+#foot {
+  display: inline;
+  text-align: center;
+}
