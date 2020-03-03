@@ -14,20 +14,122 @@
                   <button id="close" type="button" class="close" aria-label="Close" (click)="close('close')">
                     <span aria-hidden="true">&times;</span>
                   </button>
-                  <h4 id="title" class="modal-title">Configure account</h4>
+                  <h2 id="title" class="modal-title">Configure account</h2>
               </div>
               <div id="body" class="modal-body">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="createConfig()">
                   <div class="input-item">
-                    <h6>Role</h6>
+                    <h3>Role</h3>
                     <select class="form-control" formControlName="role" required>
                       <option *ngFor="let r of roles" [ngValue]="r"> {{ r }}</option>
                     </select>
                   </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <div class="input-item" *ngIf="teacher" formArrayName="moderators">
+                    <h3>Moderators</h3>
+                    <div class="items" *ngIf="f.length > 0">
+                      <div class="item">
+                        <h6>Subject</h6>
+                      </div>
+                      <div class="item">
+                        <h6>Email</h6>
+                      </div>
+                      <div class="action">
+                        <h6>Action</h6>
+                      </div>
+                    </div>
+                    <div class="items" *ngFor="let r of f.controls; let i = index" [formGroupName]="i">
+                      <div class="item">
+                        <input class="form-control" type="text" formControlName="subject" minlength="2" required/>
+                        <div *ngIf="a[i].controls.subject.errors?.required && (a[i].controls.subject.touched || a[i].controls.subject.dirty)" class="messages text-danger">Required!</div>
+                        <div *ngIf="a[i].controls.subject.errors?.minlength && (a[i].controls.subject.touched || a[i].controls.subject.dirty)" class="messages text-danger">Minimum length of 2!</div>
+                      </div>
+                      <div class="item">
+                        <input class="form-control" type="email" formControlName="email" required/>
+                        <div *ngIf="a[i].controls.email.errors?.required && (a[i].controls.email.touched || a[i].controls.email.dirty)" class="messages text-danger">Required!</div>
+                        <div *ngIf="a[i].controls.email.errors?.email && (a[i].controls.email.touched || a[i].controls.email.dirty)" class="messages text-danger">Invalid email!</div>
+                      </div>
+                      <div class="action">
+                        <button type="button" class="btn btn-danger" (click)="deleteModerator(i)">Delete</button>
+                      </div>
+                    </div>
+                    <div class="items">
+                      <button type="button" class="btn btn-primary" (click)="addModerator()">Add</button>
+                    </div>
+                    <div class="items" *ngIf="f.length === 0">
+                      <div class="messages text-danger">At least 1 Moderator required!</div>
+                    </div>
+                  </div>
                 </form>
+
+
+
+
+
+
+
+
+
+
               </div>
               <div id="foot" class="modal-footer">
-                  <button id="btnAdd" (click)="createConfig()" class="btn btn-out btn-success">Configure</button>
+                  <button id="btnAdd" type="button" (click)="createConfig()" class="btn btn-success">Configure</button>
               </div>
             </ng-template>
           </div>

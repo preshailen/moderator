@@ -48,4 +48,16 @@ export class DriveService {
       return false;
     }
   }
+  checkUsername(name: string) {
+    this.options = {
+      headers: new HttpHeaders({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.get('https://app.verify-email.org/api/v1/jSiF60tq0lnoEgl8CLXNKfwY6irCECvHIWKEIzLtN8WPl8WhC9/verify/' + name, this.options).toPromise().then(
+      v => console.log(v),
+      err => console.log(err)
+    );
+  }
 }
