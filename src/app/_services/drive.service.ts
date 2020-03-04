@@ -18,14 +18,14 @@ export class DriveService {
     };
     return this.http.get<any>('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, this.options).toPromise();
   }
-  addConfig(name: string, role: string): void {
+  addConfig(name: string, body: {}): void {
     this.options = {
       headers: new HttpHeaders({
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
         'Content-Type': 'application/json'
       })
     };
-    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', { 'role': role } , this.options).toPromise().then(
+    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.options).toPromise().then(
       c => {
         this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id, { 'name': name }, this.options).toPromise().then(
           v => console.log(v)
@@ -47,17 +47,5 @@ export class DriveService {
     } else {
       return false;
     }
-  }
-  checkUsername(name: string) {
-    this.options = {
-      headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      })
-    };
-    return this.http.get('https://app.verify-email.org/api/v1/jSiF60tq0lnoEgl8CLXNKfwY6irCECvHIWKEIzLtN8WPl8WhC9/verify/' + name, this.options).toPromise().then(
-      v => console.log(v),
-      err => console.log(err)
-    );
   }
 }

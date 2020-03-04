@@ -32,6 +32,8 @@ export class AdminComponent implements OnInit {
         this.configured = true;
         this.config(config);
       } else {
+        document.getElementById('setup').click();
+        // this.setup(document);
         this.configured = false;
       }
     } else {
@@ -60,21 +62,22 @@ export class AdminComponent implements OnInit {
   }
   createConfig() {
     if (!this.configForm.invalid) {
-      // this.ds.addConfig('config.ini', this.configForm.get('role').value);
-      let pass = true;
-      for (let f = 0; f < (this.configForm.get('moderators') as FormArray).length; f++) {
-        if (!this.ds.checkUsername((this.configForm.get('moderators') as FormArray).at(f).get('email').value)) {
-          pass = false;
-        }
+      const moderators = [];
+      for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
+        moderators.push({
+          subject: (this.configForm.get('moderators') as FormArray).at(y).get('subject').value,
+          email: (this.configForm.get('moderators') as FormArray).at(y).get('email').value
+        });
       }
-      if (pass) {
-        this.moderator = false;
-        this.teacher = false;
-        this.configForm = null;
-        this.close('done');
-      } else {
-        this.general.error('Invalid Form!');
-      }
+      const body = {
+        role: this.configForm.get('role').value,
+        moderators: moderators
+      };
+      this.ds.addConfig('config.ini', body);
+      this.moderator = false;
+      this.teacher = false;
+      this.configForm = null;
+      this.close('done');
     } else {
       this.general.error('Invalid Form!');
     }
@@ -86,6 +89,7 @@ export class AdminComponent implements OnInit {
         if (c.role === 'Moderator') {
 
         } else if (c.role === 'Teacher') {
+
 
         }
       }
