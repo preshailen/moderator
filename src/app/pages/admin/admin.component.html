@@ -3,73 +3,65 @@
         <div class="card card-user">
           <div class="card-header form-group">
               <div class="update ml-auto mr-auto">
-                <div >
-
+                <div *ngIf="teacher">
+                  TEACHER
                 </div>
-                
+                <div *ngIf="moderator">
+                  MODERATOR
+                </div>
               </div>
           </div>
         </div>
       </div>
 </div>
-<div class="row col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!configured">
-  NO DATA TO DISPLAY! <br><br>
-  <button style="margin: 0 auto" type="button" class="btn btn-primary" (click)="setup(content)">Setup</button>
-</div>
-<button id="setup" style="display: none" (click)="setup(content)"></button>
-<ng-template #content>
-  <div id="head" class="modal-header">
-      <button id="close" type="button" class="close" aria-label="Close" (click)="close('close')">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <h2 id="title" class="modal-title">Configure account</h2>
-  </div>
-  <div id="body" class="modal-body">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="unconfigured row col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!configured">
+    <h2>Configure account</h2>
     <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="createConfig()">
-      <div class="input-item">
-        <h3>Role</h3>
-        <select class="form-control" formControlName="role" required>
-          <option *ngFor="let r of roles" [ngValue]="r"> {{ r }}</option>
-        </select>
-      </div>
-      <div class="input-item" *ngIf="teacher" formArrayName="moderators">
-        <h3>Moderators</h3>
-        <div class="items" *ngIf="f.length > 0">
-          <div class="item">
-            <h6>Subject</h6>
-          </div>
-          <div class="item">
-            <h6>Email</h6>
-          </div>
-          <div class="action">
-            <h6>Action</h6>
+        <div class="input-item">
+          <h4>Role</h4>
+          <select class="form-control" formControlName="role" required>
+            <option *ngFor="let r of roles" [ngValue]="r"> {{ r }}</option>
+          </select>
+        </div>
+        <div class="input-item" *ngIf="teacher">
+          <h4>Moderators</h4>
+          <table formArrayName="moderators">
+            <tr>
+              <th class="item">Name</th>
+              <th class="item">Email</th>
+              <th class="action">Action</th>
+            </tr>
+            <tr *ngFor="let a of f.controls; let i = index" [formGroupName]="i">
+              <td class="item">
+                <input class="form-control" type="text" formControlName="name" minlength="2" required/>
+                <div *ngIf="getVal(i).name.errors?.required && (getVal(i).name.touched || getVal(i).name.dirty)" class="messages  text-danger">Required!</div>
+                <div *ngIf="getVal(i).name.errors?.minlength && (getVal(i).name.touched || getVal(i).name.dirty)" class="messages  text-danger">Minimum length of 2!</div>
+              </td>
+              <td class="item">
+                <input class="form-control" type="email" formControlName="email" required/>
+                <div *ngIf="getVal(i).email.errors?.required && (getVal(i).email.touched || getVal(i).email.dirty)" class="messages  text-danger">Required!</div>
+                <div *ngIf="getVal(i).email.errors?.email && (getVal(i).email.touched || getVal(i).email.dirty)" class="messages  text-danger">Invalid email!</div>
+              </td>
+              <td class="action"><button class="btn btn-danger" type="button" (click)="deleteModerator(i)">Delete</button></td>
+            </tr>
+          </table>
+          <div class="button-wrapper">
+            <button type="button" class="btn btn-info btn-add" (click)="addModerator()">Add</button>
           </div>
         </div>
-        <div class="items" *ngFor="let r of f.controls; let i = index" [formGroupName]="i">
-          <div class="item">
-            <input class="form-control" type="text" formControlName="subject" minlength="2" required/>
-            <div *ngIf="a[i].controls.subject.errors?.required && (a[i].controls.subject.touched || a[i].controls.subject.dirty)" class="messages text-danger">Required!</div>
-            <div *ngIf="a[i].controls.subject.errors?.minlength && (a[i].controls.subject.touched || a[i].controls.subject.dirty)" class="messages text-danger">Minimum length of 2!</div>
-          </div>
-          <div class="item">
-            <input class="form-control" type="email" formControlName="email" required/>
-            <div *ngIf="a[i].controls.email.errors?.required && (a[i].controls.email.touched || a[i].controls.email.dirty)" class="messages text-danger">Required!</div>
-            <div *ngIf="a[i].controls.email.errors?.email && (a[i].controls.email.touched || a[i].controls.email.dirty)" class="messages text-danger">Invalid email!</div>
-          </div>
-          <div class="action">
-            <button type="button" class="btn btn-danger" (click)="deleteModerator(i)">Delete</button>
-          </div>
-        </div>
-        <div class="items">
-          <button type="button" class="btn btn-primary" (click)="addModerator()">Add</button>
-        </div>
-        <div class="items" *ngIf="f.length === 0">
-          <div class="messages text-danger">At least 1 Moderator required!</div>
-        </div>
-      </div>
     </form>
-  </div>
-  <div id="foot" class="modal-footer">
-      <button id="btnAdd" type="button" (click)="createConfig()" class="btn btn-success">Configure</button>
-  </div>
-</ng-template>
+    <button id="btnAdd" type="button" (click)="createConfig()" class="btn btn-success btn-cust">Configure</button>
+</div>

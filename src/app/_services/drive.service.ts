@@ -5,41 +5,36 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class DriveService {
-  apiKey: string;
-  options: {};
-  constructor(private http: HttpClient) {
-    this.apiKey = 'AIzaSyBVlg0RWo6AgOUoQ_w396_K2hJAZZNn8Js';
+  apiKey = 'AIzaSyBVlg0RWo6AgOUoQ_w396_K2hJAZZNn8Js';
+  constructor(private http: HttpClient) { }
+  getOptions(): {} {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    return { headers };
   }
-  listFiles(): Promise<any> {
-    this.options = {
-      headers: new HttpHeaders({
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-      })
-    };
-    return this.http.get<any>('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, this.options).toPromise();
+  getFiles(): Promise<any> {
+    return this.http.get<any>('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, this.getOptions()).toPromise();
   }
-  addConfig(name: string, body: {}): void {
-    this.options = {
-      headers: new HttpHeaders({
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
-      })
-    };
-    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.options).toPromise().then(
+  getFile(id: string): Promise<any> {
+    return this.http.get<any>('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', this.getOptions()).toPromise();
+  }
+  addFile(name: string, body: {}, parentId?: string): void {
+    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise().then(
       c => {
-        this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id, { 'name': name }, this.options).toPromise().then(
-          v => console.log(v)
-        );
+        return this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id, { 'name': name }, this.getOptions()).toPromise();
       }
     );
   }
-  getFile(id: string): Promise<any> {
-    this.options = {
-      headers: new HttpHeaders({
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-      })
-    };
-    return this.http.get<any>('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', this.options).toPromise();
+  addFolder(name: string): Promise<{}> {
+    const data = { 'mimeType': 'application/vnd.google-apps.folder', 'name': name };
+    return this.http.post('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, data, this.getOptions()).toPromise();
+  }
+  addPermission(fileId: string, emailAddress: string): Promise<{}> {
+    const data = { 'role': 'writer', 'type': 'user', 'emailAddress': emailAddress };
+    return this.http.post('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions?key' + this.apiKey, data, this.getOptions()).toPromise();
   }
   loggedIn(): boolean {
     if (localStorage.getItem('authToken')) {

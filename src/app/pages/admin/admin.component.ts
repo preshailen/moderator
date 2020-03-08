@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DriveService } from 'app/_services/drive.service';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { FormGroup, FormControl, Validators, FormArray, Form, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AlertService } from 'app/_services/alert.service';
 
 @Component({
@@ -10,19 +9,14 @@ import { AlertService } from 'app/_services/alert.service';
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent implements OnInit {
-  configured: boolean = null;
-  private modalRef: NgbModalRef;
+  configured = false;
   configForm: FormGroup;
-  roles: string[] = [];
-  teacher: boolean = null;
-  moderator: boolean = null;
-
-  constructor(private ds: DriveService, public modalService: NgbModal, public general: AlertService) { }
-
+  roles = ['Moderator', 'Teacher'];
+  teacher = false;
+  moderator = false;
+  constructor(private ds: DriveService, public general: AlertService) { }
   ngOnInit() {
-    this.ds.listFiles().then(x => this.sort(x)).catch(err => console.log(err));
-    this.roles.push('Moderator');
-    this.roles.push('Teacher');
+    this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
   }
   sort(val: any) {
     if (val.files.length > 0) {
@@ -32,15 +26,15 @@ export class AdminComponent implements OnInit {
         this.configured = true;
         this.config(config);
       } else {
-        document.getElementById('setup').click();
-        // this.setup(document);
         this.configured = false;
+        this.setup();
       }
     } else {
       this.configured = false;
+      this.setup();
     }
   }
-  setup(content: any) {
+  setup() {
     this.configForm = new FormGroup({
       role: new FormControl('', Validators.required),
       moderators: new FormArray([])
@@ -54,30 +48,30 @@ export class AdminComponent implements OnInit {
         this.teacher = false;
       }
     });
-    this.modalRef = this.modalService.open(content, { size: 'lg', keyboard: false, backdrop: 'static' });
-    this.modalRef.result.then((result) => {}, (reason) => {});
-  }
-  close(reason: string) {
-    this.modalRef.close();
+    this.configForm.get('role').setValue('Teacher');
   }
   createConfig() {
     if (!this.configForm.invalid) {
       const moderators = [];
       for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
         moderators.push({
-          subject: (this.configForm.get('moderators') as FormArray).at(y).get('subject').value,
+          name: (this.configForm.get('moderators') as FormArray).at(y).get('name').value,
           email: (this.configForm.get('moderators') as FormArray).at(y).get('email').value
         });
+        this.ds.addFolder(moderators[y].name.toString()).then(
+          v => {
+            this.ds.addPermission((v as any).id, moderators[y].email).then(g => g);
+          }
+        ).catch(err => err);
       }
       const body = {
         role: this.configForm.get('role').value,
         moderators: moderators
       };
-      this.ds.addConfig('config.ini', body);
+      this.ds.addFile('config.ini', body);
       this.moderator = false;
       this.teacher = false;
       this.configForm = null;
-      this.close('done');
     } else {
       this.general.error('Invalid Form!');
     }
@@ -85,27 +79,26 @@ export class AdminComponent implements OnInit {
   config(config: any) {
     this.ds.getFile(config.id).then(
       c => {
-        console.log(c)
         if (c.role === 'Moderator') {
-
+          this.moderator = true;
         } else if (c.role === 'Teacher') {
-
-
+          this.teacher = true;
+          console.log(c);
         }
       }
-    )
+    );
   }
   addModerator() {
     (this.configForm.get('moderators') as FormArray).push(new FormGroup({
-      subject: new FormControl('', [Validators.required, Validators.minLength(2)]),
+      name: new FormControl('', [Validators.required, Validators.minLength(2)]),
       email: new FormControl('', [Validators.required, this.customEmailValidator])
     }));
   }
   get f() {
     return this.configForm.get('moderators') as FormArray;
   }
-  get a() {
-    return (this.configForm.controls.moderators as FormArray).controls;
+  getVal(id: number) {
+    return ((this.configForm.get('moderators') as FormArray).at(id) as FormGroup).controls;
   }
   deleteModerator(id: number) {
     (this.configForm.get('moderators') as FormArray).removeAt(id);

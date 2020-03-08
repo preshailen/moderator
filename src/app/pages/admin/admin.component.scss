@@ -1,49 +1,28 @@
-h5, h3, .form-group {
-  text-align: center;
-}
-#head {
-  padding: .4rem;
-  display: block;
-  #title {
-     text-align: center;
+.unconfigured {
+  h2, h4 {
+    text-align: center;
+    margin-bottom: 0%;
   }
-  #close {
-     padding: 0% 5% 0% 95%;
-     margin: 0 auto;
-  }
-}
-#body {
-  .input-item {
-    display: block;
-    h4, h6, .messages {
-      text-align: center;
-      padding-top: .5rem;
+  table {
+    text-align: center;
+    width: 100%;
+    .item {
+      width: 35%;
+      input {
+        width: 100%;
+      }
+    }
+    .action {
+      width: 15%;
     }
   }
-}
-#foot {
-  display: inline;
-  text-align: center;
-}
-h3 {
-  margin-bottom: 2%;
-}
-.items {
-  display: flex;
-  padding-top: 1%;
-  .item {
-    width: 40%;
-    input {
-      width: 85%;
-      margin: 0 auto;
-    }
+  .button-wrapper {
+    width: 100%;
+    text-align: center;
   }
-  .action {
-    width: 10%;
+  .btn-cust {
+    width: 50%;
     margin: 0 auto;
-  }
-  button, .messages {
-    margin-top: 10%;
-    margin: 0 auto;
+    margin-top: 2%;
   }
 }

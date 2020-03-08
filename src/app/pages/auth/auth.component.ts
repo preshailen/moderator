@@ -16,6 +16,9 @@ export class AuthComponent implements OnInit {
 
   ngOnInit() {
       this.loggedIn = this.ds.loggedIn();
+      if (!this.loggedIn) {
+        this.logout();
+      }
   }
   login(): void {
     this._as_.signIn(GoogleLoginProvider.PROVIDER_ID).then(
@@ -29,6 +32,6 @@ export class AuthComponent implements OnInit {
   logout(): void {
     this.loggedIn = false;
     localStorage.removeItem('authToken');
-    this._as_.signOut();
+    this._as_.signOut().catch(err => err);
   }
 }
