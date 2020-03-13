@@ -6,7 +6,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdminLayoutRoutes } from './admin-layout.routing';
 
 import { DashboardComponent } from '../../pages/dashboard/dashboard.component';
-import { UserComponent } from '../../pages/user/user.component';
 import { IconsComponent } from '../../pages/icons/icons.component';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -14,6 +13,7 @@ import { AuthComponent } from 'app/pages/auth/auth.component';
 import { GoogleLoginProvider, AuthServiceConfig, LoginOpt, SocialLoginModule } from 'angularx-social-login';
 import { AuthGuard } from 'app/_services/auth.guard';
 import { AdminComponent } from 'app/pages/admin/admin.component';
+import { ModerateComponent } from 'app/pages/moderate/moderate.component';
 
 const googleLoginOptions: LoginOpt = {
   prompt: 'consent',
@@ -37,8 +37,8 @@ export function providConfig() {
   ],
   declarations: [
     DashboardComponent,
-    UserComponent,
     IconsComponent,
+    ModerateComponent,
     AuthComponent,
     AdminComponent
   ], providers: [

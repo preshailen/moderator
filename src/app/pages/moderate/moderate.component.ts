@@ -10,6 +10,7 @@ export class ModerateComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    
   }
 
 }

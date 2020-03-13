@@ -10,9 +10,10 @@ export interface RouteInfo {
 
 export const ROUTES: RouteInfo[] = [
     { path: '/admin',     title: 'Admin', icon: 'nc-bank', class: '' },
+    { path: '/upload', title: 'Upload', icon: 'nc-cloud-upload-94', class: '' },
     { path: '/auth', title: 'Authorization', icon: 'nc-lock-circle-open', class: '' },
-    { path: '/icons',         title: 'Icons',             icon: 'nc-diamond',    class: '' },
-    { path: '/user',          title: 'User Profile',      icon: 'nc-single-02',  class: '' }
+    { path: ' ', title: ' ', icon: ' ', class: ' '},
+    { path: '/icons', title: 'Icons', icon: 'nc-diamond',    class: '' }
 ];
 
 @Component({

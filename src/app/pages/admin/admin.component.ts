@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DriveService } from 'app/_services/drive.service';
 import { FormGroup, FormControl, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AlertService } from 'app/_services/alert.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -12,16 +13,17 @@ export class AdminComponent implements OnInit {
   configured = false;
   configForm: FormGroup;
   roles = ['Moderator', 'Teacher'];
-  teacher = false;
-  moderator = false;
-  constructor(private ds: DriveService, public general: AlertService) { }
+  role = false;
+  files = [];
+  folders = [];
+  constructor(private ds: DriveService, public general: AlertService, private router: Router) { }
   ngOnInit() {
     this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
   }
   sort(val: any) {
     if (val.files.length > 0) {
-      const files: [] = val.files;
-      const config = files.find(f => (f as any).name === 'config.ini');
+      this.files = val.files;
+      const config = this.files.find(f => (f as any).name === 'config.ini');
       if (config) {
         this.configured = true;
         this.config(config);
@@ -41,47 +43,42 @@ export class AdminComponent implements OnInit {
     });
     this.configForm.get('role').valueChanges.subscribe(i => {
       if (i === 'Teacher') {
-        this.teacher = true;
-        this.moderator = false;
+        this.role = true;
       } else if (i === 'Moderator') {
-        this.moderator = true;
-        this.teacher = false;
+        this.role = false;
       }
     });
-    this.configForm.get('role').setValue('Teacher');
   }
-  createConfig() {
+  configModerator() {
     if (!this.configForm.invalid) {
       const moderators = [];
+      const permissions = [];
+      const folders = [];
       const ids = [];
-      const vals = [];
-      const answers = [];
         for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
           moderators.push({
             name: (this.configForm.get('moderators') as FormArray).at(y).get('name').value,
             email: (this.configForm.get('moderators') as FormArray).at(y).get('email').value
           });
-          vals.push(
-          this.ds.addFolder(moderators[y].name.toString()));
+          folders.push(this.ds.addFolder(moderators[y].name.toString()));
         }
-        Promise.all(vals).then(o => {
+        Promise.all(folders).then(o => {
           for (let m = 0; m < o.length; m++) {
-            ids.push(this.ds.addPermission((o[m] as any).id, moderators[m].email));
+            permissions.push(this.ds.addPermission((o[m] as any).id, moderators[m].email));
           }
         }).then(j => {
-          Promise.all(ids).then(p => {
+          Promise.all(permissions).then(p => {
             for (let w = 0; w < p.length; w++) {
-              answers.push(p[w].id);
+              ids.push(p[w].id);
             }
           }).then(l => {
             const body = {
               role: this.configForm.get('role').value,
               moderators: moderators,
-              ids: answers
+              ids: ids
             };
             this.ds.addFile('config.ini', body);
-            this.moderator = false;
-            this.teacher = false;
+            this.role = false;
             this.configForm = null;
           });
         });
@@ -93,10 +90,13 @@ export class AdminComponent implements OnInit {
     this.ds.getFile(config.id).then(
       c => {
         if (c.role === 'Moderator') {
-          this.moderator = true;
+          this.role = false;
         } else if (c.role === 'Teacher') {
-          this.teacher = true;
-          console.log(c);
+          this.role = true;
+          const ids = this.files.filter(r => r.mimeType === 'application/vnd.google-apps.folder');
+          for (let g = 0; g < ids.length; g++) {
+             this.ds.getFolder(ids[g].id).then(n => console.log(n)).catch(err => console.log(err));
+          }
         }
       }
     );

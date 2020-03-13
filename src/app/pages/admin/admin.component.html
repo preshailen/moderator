@@ -1,32 +1,56 @@
 <div class="row" *ngIf="configured">
-      <div class="col-md-12">
-        <div class="card card-user">
-          <div class="card-header form-group">
-              <div class="update ml-auto mr-auto">
-                <div *ngIf="teacher">
-                  TEACHER
+  <div class="row unconfigured col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="role">
+    <h2>Moderators</h2>
+      <div *ngFor="let f of folders" class="moderators">
+        {{ f.name }}
+      </div>
+                  
+                  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 </div>
-                <div *ngIf="moderator">
+                <div class="card card-user card-header form-group update ml-auto mr-auto" *ngIf="!role">
                   MODERATOR
                 </div>
-              </div>
-          </div>
-        </div>
-      </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div class="unconfigured row col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!configured">
     <h2>Configure account</h2>
     <form *ngIf="configForm" [formGroup]="configForm" (ngSubmit)="createConfig()">
@@ -36,7 +60,7 @@
             <option *ngFor="let r of roles" [ngValue]="r"> {{ r }}</option>
           </select>
         </div>
-        <div class="input-item" *ngIf="teacher">
+        <div class="input-item" *ngIf="role">
           <h4>Moderators</h4>
           <table formArrayName="moderators">
             <tr>
@@ -62,6 +86,9 @@
             <button type="button" class="btn btn-info btn-add" (click)="addModerator()">Add</button>
           </div>
         </div>
+        <div class="input-item" *ngIf="((!role) && (configForm.get('role').value.length > 0))">
+        </div>
     </form>
-    <button id="btnAdd" type="button" (click)="createConfig()" class="btn btn-success btn-cust">Configure</button>
+    <button *ngIf="role" id="btnAdd" type="button" (click)="configModerator()" class="btn btn-success btn-cust">Configure Teacher Account</button>
+    <button *ngIf="((!role) && (configForm) && (configForm.get('role').value.length > 0))" id="btnAdd" type="button" (click)="configTeacher()" class="btn btn-success btn-cust">Configure Moderator Account</button>
 </div>

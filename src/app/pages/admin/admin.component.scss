@@ -26,3 +26,16 @@
     margin-top: 2%;
   }
 }
+.moderators {
+  display: inline;
+  .data {
+    width: 40%;
+    display: flex;
+    float: left;
+  }
+  .controls {
+    display: flex;
+    float: right;
+    width: 60%;
+  }
+}
