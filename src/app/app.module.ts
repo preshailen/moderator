@@ -11,12 +11,14 @@ import { AppRoutes } from './app.routing';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
+import { ModerateComponent } from './pages/moderate/moderate.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    AdminLayoutComponent
+    AdminLayoutComponent,
+    ModerateComponent
   ],
   imports: [
     BrowserAnimationsModule,

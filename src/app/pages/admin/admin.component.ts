@@ -53,25 +53,38 @@ export class AdminComponent implements OnInit {
   createConfig() {
     if (!this.configForm.invalid) {
       const moderators = [];
-      for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
-        moderators.push({
-          name: (this.configForm.get('moderators') as FormArray).at(y).get('name').value,
-          email: (this.configForm.get('moderators') as FormArray).at(y).get('email').value
-        });
-        this.ds.addFolder(moderators[y].name.toString()).then(
-          v => {
-            this.ds.addPermission((v as any).id, moderators[y].email).then(g => g);
+      const ids = [];
+      const vals = [];
+      const answers = [];
+        for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
+          moderators.push({
+            name: (this.configForm.get('moderators') as FormArray).at(y).get('name').value,
+            email: (this.configForm.get('moderators') as FormArray).at(y).get('email').value
+          });
+          vals.push(
+          this.ds.addFolder(moderators[y].name.toString()));
+        }
+        Promise.all(vals).then(o => {
+          for (let m = 0; m < o.length; m++) {
+            ids.push(this.ds.addPermission((o[m] as any).id, moderators[m].email));
           }
-        ).catch(err => err);
-      }
-      const body = {
-        role: this.configForm.get('role').value,
-        moderators: moderators
-      };
-      this.ds.addFile('config.ini', body);
-      this.moderator = false;
-      this.teacher = false;
-      this.configForm = null;
+        }).then(j => {
+          Promise.all(ids).then(p => {
+            for (let w = 0; w < p.length; w++) {
+              answers.push(p[w].id);
+            }
+          }).then(l => {
+            const body = {
+              role: this.configForm.get('role').value,
+              moderators: moderators,
+              ids: answers
+            };
+            this.ds.addFile('config.ini', body);
+            this.moderator = false;
+            this.teacher = false;
+            this.configForm = null;
+          });
+        });
     } else {
       this.general.error('Invalid Form!');
     }
