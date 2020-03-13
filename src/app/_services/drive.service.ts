@@ -19,13 +19,12 @@ export class DriveService {
     return this.http.get<any>('https://www.googleapis.com/drive/v3/files?q=trashed=false&key=' + this.apiKey, this.getOptions()).toPromise();
   }
   getFileData(id: string): Promise<any> {
-    return this.http.get<any>('https://www.googleapis.com/drive/v3/files/' + id, this.getOptions()).toPromise();s
+    return this.http.get<any>('https://www.googleapis.com/drive/v3/files/' + id, this.getOptions()).toPromise();
   }
   getFile(id: string): Promise<any> {
     return this.http.get<any>('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', this.getOptions()).toPromise();
   }
   getFolder(id: string): Promise<any> {
-    console.log(id)
     return this.http.get<any>('https://www.googleapis.com/drive/v3/files?q=' + JSON.stringify(id) + ' in parents&key=' + this.apiKey, this.getOptions()).toPromise();
   }
   addFile(name: string, body: {}, parentId?: string): void {
