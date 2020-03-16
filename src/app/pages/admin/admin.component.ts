@@ -54,7 +54,6 @@ export class AdminComponent implements OnInit {
       const moderators = [];
       const permissions = [];
       const folders = [];
-      const ids = [];
         for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
           moderators.push({
             name: (this.configForm.get('moderators') as FormArray).at(y).get('name').value,
@@ -65,22 +64,24 @@ export class AdminComponent implements OnInit {
         Promise.all(folders).then(o => {
           for (let m = 0; m < o.length; m++) {
             permissions.push(this.ds.addPermission((o[m] as any).id, moderators[m].email));
+            const val = {
+              batches: 0,
+              feedback: [],
+            };
+            permissions.push(this.ds.addSubFile('data.info', val, o[m].id));
           }
         }).then(j => {
           Promise.all(permissions).then(p => {
-            for (let w = 0; w < p.length; w++) {
-              ids.push(p[w].id);
-            }
-          }).then(l => {
             const body = {
               role: this.configForm.get('role').value,
-              moderators: moderators,
-              ids: ids
+              moderators: moderators
             };
             this.ds.addFile('config.ini', body);
             this.role = false;
             this.configForm = null;
           });
+        }).then(h => {
+          this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
         });
     } else {
       this.general.error('Invalid Form!');
@@ -93,10 +94,7 @@ export class AdminComponent implements OnInit {
           this.role = false;
         } else if (c.role === 'Teacher') {
           this.role = true;
-          const ids = this.files.filter(r => r.mimeType === 'application/vnd.google-apps.folder');
-          for (let g = 0; g < ids.length; g++) {
-             this.ds.getFolder(ids[g].id).then(n => console.log(n)).catch(err => console.log(err));
-          }
+          for (let r = 0; r < c.moderators.length; r++) { this.folders.push(this.files.find(k => (k.mimeType === 'application/vnd.google-apps.folder') && (k.name === c.moderators[r].name))); }
         }
       }
     );
@@ -121,5 +119,11 @@ export class AdminComponent implements OnInit {
       return null;
     }
     return Validators.email(control);
+  }
+  createBatch(val: any) {
+    this.router.navigate(['create/' + val]);
+  }
+  viewFeedback(val: any) {
+    console.log(val)
   }
 }

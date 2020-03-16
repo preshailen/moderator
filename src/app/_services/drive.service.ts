@@ -27,10 +27,17 @@ export class DriveService {
   getFolder(id: string): Promise<any> {
     return this.http.get<any>('https://www.googleapis.com/drive/v3/files?q=' + JSON.stringify(id) + ' in parents&key=' + this.apiKey, this.getOptions()).toPromise();
   }
-  addFile(name: string, body: {}, parentId?: string): void {
+  addFile(name: string, body: {}): void {
     this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise().then(
       c => {
         return this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id, { 'name': name }, this.getOptions()).toPromise();
+      }
+    );
+  }
+  addSubFile(name: string, body: {}, parentId: string): void {
+    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise().then(
+      c => {
+        return this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id + '?addParents=' + parentId + '&key=' + this.apiKey, { 'name': name }, this.getOptions()).toPromise();
       }
     );
   }
@@ -48,5 +55,8 @@ export class DriveService {
     } else {
       return false;
     }
+  }
+  checkFolder(id: string): Promise<boolean> {
+    return this.http.get<boolean>('https://www.googleapis.com/drive/v3/files/' + id, this.getOptions()).toPromise();
   }
 }

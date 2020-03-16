@@ -1,8 +1,12 @@
 <div class="row" *ngIf="configured">
   <div class="row unconfigured col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="role">
     <h2>Moderators</h2>
-      <div *ngFor="let f of folders" class="moderators">
-        {{ f.name }}
+      <div class="row">
+        <div *ngFor="let f of folders" class="col-md-4 folder">
+            <h3>{{ f.name }}</h3> 
+            <button class="btn btn-primary" (click)="createBatch(f.id)">Create Moderation Batch</button>
+            <button class="btn btn-danger" (click)="viewFeedback(f.id)">View feedback</button>
+        </div>
       </div>
                   
                   

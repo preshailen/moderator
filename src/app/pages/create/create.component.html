@@ -1,0 +1,23 @@
+<div class="unconfigured row col-md-12 card card-user card-header form-group update ml-auto mr-auto">
+    <h2>Create upload batch</h2>
+    <form *ngIf="uploadForm" [formGroup]="uploadForm" class="form">
+        <div class="inputs">
+            <div class="left">
+                <h5>Name: </h5>
+                <div class="input-item">
+                    <input type="text"  name="name" id="name" formControlName="name" required />
+                    <div *ngIf="false" class="messages text-danger">Required</div>
+                </div>
+            </div>
+            <button id="btnAdd" type="button" (click)="file.click()" class="btn btn-info right">Select Files
+                <i class="icofont icofont-binary">
+                    <input (change)="onFileChanges($event)" id="fileUploader"  style="display: none" type="file" accept=".pdf" #file multiple/>
+                </i> 
+            </button>
+        </div>
+        <div *ngFor="let f of files">
+            {{ f.name }}
+        </div>
+        <button *ngIf="files.length > 0" type="button" class="btn btn-success btn-cust">Upload!</button>
+    </form>
+</div>

@@ -1,0 +1,45 @@
+.unconfigured {
+  .inputs {
+    width: 100%;
+    display: flex;
+    .left {
+      width: 50%;
+      display: flex;
+      h5 {
+        width: 30%;
+        margin: 0%;
+        padding: 2%;
+        float: right;
+      }
+      .input-item {
+        float: left;
+        width: 65%;
+        input {
+          width: 100%;
+          margin: auto;
+        }
+        .messages {
+          width: 100%;
+        }
+      }
+    }
+    .right {
+      width: 50%;
+    }
+    
+  }
+  form {
+    display: contents;
+  }
+  .btn-cust {
+    width: 50%;
+    margin: 0 auto;
+    margin-top: 2%;
+  }
+    h2, h4 {
+      text-align: center;
+      margin-bottom: 0%;
+    }
+   
+    
+}
