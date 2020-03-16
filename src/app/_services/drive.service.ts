@@ -41,9 +41,24 @@ export class DriveService {
       }
     );
   }
+  addSubFile2( body: {}): Promise<any> {
+    return this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise();
+  }
+  subFilePatch(name: string, id: string, parentId: string): Promise<any> {
+    return this.http.patch('https://www.googleapis.com/drive/v3/files/' + id + '?addParents=' + parentId + '&key=' + this.apiKey, { 'name': name }, this.getOptions()).toPromise();
+  }
   addFolder(name: string): Promise<{}> {
     const data = { 'mimeType': 'application/vnd.google-apps.folder', 'name': name };
     return this.http.post('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, data, this.getOptions()).toPromise();
+  }
+  addSubFolder(name: string, parentId: string) {
+    const parents = [];
+    parents.push(parentId);
+    const data = { 'mimeType': 'application/vnd.google-apps.folder', 'name': name, 'parents': parents };
+    return this.http.post('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, data, this.getOptions()).toPromise();
+  }
+  editFile(id: string, body: {}) {
+    return this.http.patch('https://www.googleapis.com/drive/v3/files/' + id + '?key=' + this.apiKey, body, this.getOptions()).toPromise();
   }
   addPermission(fileId: string, emailAddress: string): Promise<{}> {
     const data = { 'role': 'writer', 'type': 'user', 'emailAddress': emailAddress };

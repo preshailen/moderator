@@ -6,6 +6,7 @@
       width: 50%;
       display: flex;
       h5 {
+        text-align: center;
         width: 30%;
         margin: 0%;
         padding: 2%;
@@ -16,17 +17,19 @@
         width: 65%;
         input {
           width: 100%;
-          margin: auto;
+          margin-top: 3%;
         }
         .messages {
           width: 100%;
+          margin-top: 1%;
+          text-align: center;
         }
       }
     }
     .right {
       width: 50%;
     }
-    
+
   }
   form {
     display: contents;
@@ -36,10 +39,8 @@
     margin: 0 auto;
     margin-top: 2%;
   }
-    h2, h4 {
+    h2, h4, h6 {
       text-align: center;
       margin-bottom: 0%;
     }
-   
-    
 }

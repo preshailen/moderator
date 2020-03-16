@@ -61,7 +61,14 @@ export class AdminComponent implements OnInit {
           });
           folders.push(this.ds.addFolder(moderators[y].name.toString()));
         }
-        Promise.all(folders).then(o => {
+        const body = {
+          role: this.configForm.get('role').value,
+          moderators: moderators
+        };
+        permissions.push(this.ds.addFile('config.ini', body));
+        this.role = false;
+        this.configForm = null;
+        this.general.load(Promise.all(folders)).then(o => {
           for (let m = 0; m < o.length; m++) {
             permissions.push(this.ds.addPermission((o[m] as any).id, moderators[m].email));
             const val = {
@@ -70,22 +77,13 @@ export class AdminComponent implements OnInit {
             };
             permissions.push(this.ds.addSubFile('data.info', val, o[m].id));
           }
-        }).then(j => {
-          Promise.all(permissions).then(p => {
-            const body = {
-              role: this.configForm.get('role').value,
-              moderators: moderators
-            };
-            this.ds.addFile('config.ini', body);
-            this.role = false;
-            this.configForm = null;
-          });
-        }).then(h => {
-          this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
-        });
+        }).then(j => this.general.load(Promise.all(permissions)).then(p => this.ds.getFiles().then(x => this.sort(x)).catch(err => err)));
     } else {
       this.general.error('Invalid Form!');
     }
+  }
+  configTeacher() {
+
   }
   config(config: any) {
     this.ds.getFile(config.id).then(
@@ -124,6 +122,6 @@ export class AdminComponent implements OnInit {
     this.router.navigate(['create/' + val]);
   }
   viewFeedback(val: any) {
-    console.log(val)
+    this.router.navigate(['view/' + val]);
   }
 }
