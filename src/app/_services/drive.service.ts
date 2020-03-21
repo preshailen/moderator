@@ -41,12 +41,6 @@ export class DriveService {
       }
     );
   }
-  addSubFile2( body: {}): Promise<any> {
-    return this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise();
-  }
-  subFilePatch(name: string, id: string, parentId: string): Promise<any> {
-    return this.http.patch('https://www.googleapis.com/drive/v3/files/' + id + '?addParents=' + parentId + '&key=' + this.apiKey, { 'name': name }, this.getOptions()).toPromise();
-  }
   addFolder(name: string): Promise<{}> {
     const data = { 'mimeType': 'application/vnd.google-apps.folder', 'name': name };
     return this.http.post('https://www.googleapis.com/drive/v3/files?key=' + this.apiKey, data, this.getOptions()).toPromise();
