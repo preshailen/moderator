@@ -4,56 +4,37 @@
       <div class="row">
         <div *ngFor="let f of folders" class="col-md-4 folder">
             <h3>{{ f.name }}</h3>
-            <button class="btn btn-primary" (click)="createBatch(f.id)">Create Moderation Batch</button>
-            <button class="btn btn-danger" (click)="viewFeedback(f.id)">View feedback</button>
+            <button class="btn btn-primary" (click)="createBatch(f.id)">Create Batch  <i class="nc-icon nc-simple-add"></i></button>
+            <button class="btn btn-danger" (click)="viewFeedback(f.id)">View feedback  <i class="nc-icon nc-zoom-split"></i></button>
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                </div>
-                <div class="card card-user card-header form-group update ml-auto mr-auto" *ngIf="!role">
-                  MODERATOR
-                </div>
+  </div>
+  <div class="row unconfigured col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!role">
+    <h2>Unmoderated Batches</h2>
+    <div class="row" *ngIf="moderates.length > 0">
+      <div *ngFor="let f of moderates" class="col-md-4 folder">
+        <h3>{{ f.name.toString().substr(0, f.name.toString().indexOf('.moderate')) }}</h3>
+        <button class="btn btn-primary" (click)="moderate(f.id)">Moderate  <i class="nc-icon nc-simple-add"></i></button>
+      </div>
+    </div>
+    <div class="row" *ngIf="0 >= moderates.length">
+      <div class="col-md-12">
+        <h4>No data to display!</h4>
+      </div>
+    </div>
+    <h2>Moderated Batches</h2>
+    <div class="row" *ngIf="feedbacks.length > 0">
+      <div *ngFor="let f of feedbacks" class="col-md-4 folder">
+        <h3>{{ f.name.toString().substr(0, f.name.toString().indexOf('.feedback')) }}</h3>
+        <button class="btn btn-danger" (click)="feedback(f.id)">View  <i class="nc-icon nc-zoom-split"></i></button>
+      </div>
+    </div>
+    <div class="row" *ngIf="0 >= feedbacks.length">
+      <div class="col-md-12">
+        <h4>No data to display!</h4>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="unconfigured row col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!configured">
     <h2>Configure account</h2>
@@ -83,16 +64,16 @@
                 <div *ngIf="getVal(i).email.errors?.required && (getVal(i).email.touched || getVal(i).email.dirty)" class="messages  text-danger">Required!</div>
                 <div *ngIf="getVal(i).email.errors?.email && (getVal(i).email.touched || getVal(i).email.dirty)" class="messages  text-danger">Invalid email!</div>
               </td>
-              <td class="action"><button class="btn btn-danger" type="button" (click)="deleteModerator(i)">Delete</button></td>
+              <td class="action"><button class="btn btn-danger" type="button" (click)="deleteModerator(i)">Delete  <i class="nc-icon nc-simple-remove"></i></button></td>
             </tr>
           </table>
           <div class="button-wrapper">
-            <button type="button" class="btn btn-info btn-add" (click)="addModerator()">Add</button>
+            <button type="button" class="btn btn-info btn-add" (click)="addModerator()">Add  <i class="nc-icon nc-simple-add"></i>
+            </button>
           </div>
         </div>
-        <div class="input-item" *ngIf="((!role) && (configForm.get('role').value.length > 0))">
-        </div>
+        <!--<div class="input-item" *ngIf="((!role) && (configForm.get('role').value.length > 0))"></div>-->
     </form>
-    <button *ngIf="role" id="btnAdd" type="button" (click)="configModerator()" class="btn btn-success btn-cust">Configure Teacher Account</button>
+    <button *ngIf="role" id="btnAdd" type="button" (click)="configModerator()" class="btn btn-success btn-cust">Configure Teacher Account  <i class="nc-icon nc-cloud-upload-94"></i></button>
     <button *ngIf="((!role) && (configForm) && (configForm.get('role').value.length > 0))" id="btnAdd" type="button" (click)="configTeacher()" class="btn btn-success btn-cust">Configure Moderator Account</button>
 </div>

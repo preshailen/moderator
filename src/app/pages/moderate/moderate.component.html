@@ -1,0 +1,18 @@
+<link type="text/css" href="https://uicdn.toast.com/tui-color-picker/v2.2.3/tui-color-picker.css" rel="stylesheet">
+<form *ngIf="mForm" [formGroup]="mForm" class="unconfigured row col-md-12 card card-user card-header form-group update ml-auto mr-auto">
+  <div class="row">
+    <div class="col-md-12">
+      <h4>Current File: </h4>
+      <div class="input-item">
+        <select class="form-control" formControlName="currentFileChosen">
+          <option *ngFor="let item of files" [ngValue]="item">{{ item.name }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="row pdf-layer">
+    <div class="col-md-12 pdf-container">
+      <tui-image-editor [options]="options"></tui-image-editor>
+    </div>
+  </div>
+</form>

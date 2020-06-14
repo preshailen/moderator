@@ -16,6 +16,8 @@ export class AdminComponent implements OnInit {
   role = false;
   files = [];
   folders = [];
+  moderates = [];
+  feedbacks = [];
   constructor(private ds: DriveService, public general: AlertService, private router: Router) { }
   ngOnInit() {
     this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
@@ -23,7 +25,7 @@ export class AdminComponent implements OnInit {
   sort(val: any) {
     if (val.files.length > 0) {
       this.files = val.files;
-      const config = this.files.find(f => (f as any).name === 'config.ini');
+      const config = this.files.find(f => (f as any).name === 'config.json');
       if (config) {
         this.configured = true;
         this.config(config);
@@ -54,42 +56,50 @@ export class AdminComponent implements OnInit {
       const moderators = [];
       const permissions = [];
       const folders = [];
-        for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
+      for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
+        folders.push(this.ds.addFolder((this.configForm.get('moderators') as FormArray).at(y).get('name').value));
+      }
+      this.general.load(Promise.all(folders)).then(o => {
+        for (let m = 0; m < o.length; m++) {
           moderators.push({
-            name: (this.configForm.get('moderators') as FormArray).at(y).get('name').value,
-            email: (this.configForm.get('moderators') as FormArray).at(y).get('email').value
+            name: (this.configForm.get('moderators') as FormArray).at(m).get('name').value,
+            email: (this.configForm.get('moderators') as FormArray).at(m).get('email').value,
+            id: (o[m] as any).id
           });
-          folders.push(this.ds.addFolder(moderators[y].name.toString()));
+          permissions.push(this.ds.addPermission((o[m] as any).id, (this.configForm.get('moderators') as FormArray).at(m).get('email').value));
         }
         const body = {
           role: this.configForm.get('role').value,
           moderators: moderators
         };
-        permissions.push(this.ds.addFile('config.ini', body));
-        this.role = false;
-        this.configForm = null;
-        this.general.load(Promise.all(folders)).then(o => {
-          for (let m = 0; m < o.length; m++) {
-            permissions.push(this.ds.addPermission((o[m] as any).id, moderators[m].email));
-            const val = {
-              batches: 0,
-              feedback: [],
-            };
-            permissions.push(this.ds.addSubFile('data.info', val, o[m].id));
-          }
-        }).then(j => this.general.load(Promise.all(permissions)).then(p => this.ds.getFiles().then(x => this.sort(x)).catch(err => err)));
+        permissions.push(this.ds.addSyncFile('config.json', body));
+        this.general.load(Promise.all(permissions)).then(j => {
+          this.role = false;
+          this.configForm = null;
+          this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
+        });
+      });
     } else {
       this.general.error('Invalid Form!');
     }
   }
   configTeacher() {
-
+    const body = {
+      role: this.configForm.get('role').value
+    };
+    this.general.load(this.ds.addSyncFile('config.json', body)).then(m => {
+      this.role = false;
+      this.configForm = null;
+      this.config(m);
+    }).catch(err => this.general.error(err));
   }
   config(config: any) {
     this.ds.getFile(config.id).then(
       c => {
         if (c.role === 'Moderator') {
           this.role = false;
+          this.moderates = this.files.filter(o => (o.name as string).endsWith('.moderate'));
+          this.feedbacks = this.files.filter(o => (o.name as string).endsWith('.feedback'));
         } else if (c.role === 'Teacher') {
           this.role = true;
           for (let r = 0; r < c.moderators.length; r++) { this.folders.push(this.files.find(k => (k.mimeType === 'application/vnd.google-apps.folder') && (k.name === c.moderators[r].name))); }
@@ -123,5 +133,11 @@ export class AdminComponent implements OnInit {
   }
   viewFeedback(val: any) {
     this.router.navigate(['view/' + val]);
+  }
+  moderate(val: any) {
+    this.router.navigate(['moderate/' + val]);
+  }
+  feedback(val: any) {
+    this.router.navigate(['feedback/' + val]);
   }
 }

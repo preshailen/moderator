@@ -9,7 +9,7 @@ import { DriveService } from './drive.service';
 export class ErrorInterceptor implements HttpInterceptor {
   constructor(private as: AlertService, private ds: DriveService) {}
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        return next.handle(req).pipe(
+      return next.handle(req).pipe(
             catchError(error => {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {

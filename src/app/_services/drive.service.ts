@@ -15,6 +15,14 @@ export class DriveService {
     });
     return { headers };
   }
+  getPngOptions(): {} {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Content-Type': 'image/png',
+      'Accept': 'image/png',
+    });
+    return { headers };
+  }
   getFiles(): Promise<any> {
     return this.http.get<any>('https://www.googleapis.com/drive/v3/files?q=trashed=false&key=' + this.apiKey, this.getOptions()).toPromise();
   }
@@ -34,12 +42,48 @@ export class DriveService {
       }
     );
   }
-  addSubFile(name: string, body: {}, parentId: string): void {
-    this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise().then(
-      c => {
-        return this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id + '?addParents=' + parentId + '&key=' + this.apiKey, { 'name': name }, this.getOptions()).toPromise();
+  addSyncFile(name: string, body: {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise().then(c => {
+        this.http.patch('https://www.googleapis.com/drive/v3/files/' + (c as any).id, { 'name': name }, this.getOptions()).toPromise().then(b => {
+          resolve(b);
+        }).catch(err => reject(err));
+      }).catch(err => reject(err));
+    });
+  }
+  addFileBatch(batchName: string, files: File[], fileNames: string[], parentId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const _files = [];
+      const _data = [];
+      const data = [];
+      const permissions = [];
+      for (let f = 0; f < files.length; f++) {
+        _files.push(this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', files[f], this.getPngOptions()).toPromise());
       }
-    );
+      Promise.all(_files).then(c => {
+        const permission = { 'role': 'writer', 'type': 'anyone' };
+        for (let h = 0; h < c.length; h++) {
+          _data.push(this.http.patch('https://www.googleapis.com/drive/v3/files/' + c[h].id + '?addParents=' + parentId + '&key=' + this.apiKey, { 'name': fileNames[h] }, this.getOptions()).toPromise());
+          permissions.push(this.http.post('https://www.googleapis.com/drive/v3/files/' + c[h].id + '/permissions?key=' + this.apiKey, permission, this.getOptions()).toPromise());
+        }
+        Promise.all(_data).then(d => {
+          for (let s = 0; s < d.length; s++) {
+            data.push({
+              id: d[s].id,
+              name: d[s].name
+            });
+          }
+          Promise.all(permissions).then(y => {
+            this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', { data }, this.getOptions()).toPromise().then(l => {
+              const name = batchName + '.moderate';
+              this.http.patch('https://www.googleapis.com/drive/v3/files/' + (l as any).id + '?addParents=' + parentId, { 'name': name }, this.getOptions()).toPromise().then(q => {
+                resolve(q);
+                }).catch(err => reject(err));
+              }).catch(err => reject(err));
+            }).catch(err => reject(err));
+          }).catch(err => console.log(err));
+        }).catch(err => reject(err));
+      });
   }
   addFolder(name: string): Promise<{}> {
     const data = { 'mimeType': 'application/vnd.google-apps.folder', 'name': name };
