@@ -12,7 +12,7 @@
   <div class="row unconfigured col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!role">
     <h2>Unmoderated Batches</h2>
     <div class="row" *ngIf="moderates.length > 0">
-      <div *ngFor="let f of moderates" class="col-md-4 folder">
+      <div *ngFor="let f of moderates" class="col-md-6 folder">
         <h3>{{ f.name.toString().substr(0, f.name.toString().indexOf('.moderate')) }}</h3>
         <button class="btn btn-primary" (click)="moderate(f.id)">Moderate  <i class="nc-icon nc-simple-add"></i></button>
       </div>
@@ -24,7 +24,7 @@
     </div>
     <h2>Moderated Batches</h2>
     <div class="row" *ngIf="feedbacks.length > 0">
-      <div *ngFor="let f of feedbacks" class="col-md-4 folder">
+      <div *ngFor="let f of feedbacks" class="col-md-6 folder">
         <h3>{{ f.name.toString().substr(0, f.name.toString().indexOf('.feedback')) }}</h3>
         <button class="btn btn-danger" (click)="feedback(f.id)">View  <i class="nc-icon nc-zoom-split"></i></button>
       </div>
@@ -72,7 +72,6 @@
             </button>
           </div>
         </div>
-        <!--<div class="input-item" *ngIf="((!role) && (configForm.get('role').value.length > 0))"></div>-->
     </form>
     <button *ngIf="role" id="btnAdd" type="button" (click)="configModerator()" class="btn btn-success btn-cust">Configure Teacher Account  <i class="nc-icon nc-cloud-upload-94"></i></button>
     <button *ngIf="((!role) && (configForm) && (configForm.get('role').value.length > 0))" id="btnAdd" type="button" (click)="configTeacher()" class="btn btn-success btn-cust">Configure Moderator Account</button>

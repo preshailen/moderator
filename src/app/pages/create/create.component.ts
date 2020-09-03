@@ -41,7 +41,7 @@ export class CreateComponent implements OnInit {
                 const canvas = document.createElement('canvas');
                 canvas.classList.add(v.toString());
                 document.getElementById('holder').appendChild(canvas);
-                const viewport = pages[g].getViewport(1);
+                const viewport = pages[g].getViewport(3);
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
                 renders.push(pages[g].render({ canvasContext: canvas.getContext('2d'), viewport: viewport }));

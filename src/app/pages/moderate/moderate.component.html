@@ -1,4 +1,11 @@
 <link type="text/css" href="https://uicdn.toast.com/tui-color-picker/v2.2.3/tui-color-picker.css" rel="stylesheet">
+<div class="row card card-user card-header">
+  <div class="col-md-12">
+    <button class="btn btn-success" (click)="save()">Save Annotations</button>
+    <button class="btn btn-warning">Finish batch</button>
+    <div id="holder"></div>
+  </div>
+</div>
 <form *ngIf="mForm" [formGroup]="mForm" class="unconfigured row col-md-12 card card-user card-header form-group update ml-auto mr-auto">
   <div class="row">
     <div class="col-md-12">

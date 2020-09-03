@@ -15,7 +15,7 @@ export class ModerateComponent implements OnInit, AfterViewInit {
   options = {
     includeUI: {
       loadImage: { path: 'https://picsum.photos/200/300', name: 'Blank' },
-      menu: ['draw', 'shape', 'text'],
+      menu: ['text', 'draw'],
       menuBarPosition: 'bottom'
     },
     cssMaxWidth: 700,
@@ -27,8 +27,7 @@ export class ModerateComponent implements OnInit, AfterViewInit {
     this.route.data.subscribe(data => {
       this.files = data.data['data'];
       this.mForm = new FormGroup({
-        currentFileChosen: new FormControl(),
-        htmlContent: new FormControl()
+        currentFileChosen: new FormControl()
       });
       this.mForm.get('currentFileChosen').valueChanges.subscribe(b => {
         this.editor.editorInstance.loadImageFromURL('https://cors-anywhere.herokuapp.com/https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
@@ -39,5 +38,8 @@ export class ModerateComponent implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     document.getElementsByClassName('tui-image-editor-header')[0].remove();
+  }
+  save() {
+   console.log(this.mForm.value)
   }
 }
