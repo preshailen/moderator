@@ -15,17 +15,33 @@ export class RemarksComponent implements OnInit {
   title = null;
   items = [];
   id = null;
+  backend = null;
   constructor(public drive: DriveService, public alert: AlertService, private modalService: NgbModal) { }
 
   ngOnInit() {
-    this.drive.getFiles().then(i => {
-      const remarks = i.files.find(f => (f as any).name === 'remarks.json');
-      if (remarks) {
-        this.seed(remarks);
-      } else {
-        this.configureRemarks();
-      }
-    }).catch(err => console.log(err));
+    if (localStorage.getItem('backend') === 'yes') {
+      this.backend = true;
+      this.drive.getFiles().then(i => {
+        const remarks = i.files.filter(f => (f as any).name === 'remarks.json');
+        for (let r = 0; r < remarks.length; r++) {
+          this.drive.getFile(remarks[r].id).then(o => {
+            for (let g = 0; g < o.items.length; g++) {
+              this.items.push(o.items[g]);
+            }
+          });
+        }
+      }).catch(err => console.log(err));
+    } else {
+      this.backend = false;
+      this.drive.getFiles().then(i => {
+        const remarks = i.files.find(f => (f as any).name === 'remarks.json');
+        if (remarks) {
+          this.seed(remarks);
+        } else {
+          this.configureRemarks();
+        }
+      }).catch(err => console.log(err));
+    }
   }
   configureRemarks() {
     this.alert.load(this.drive.configureRemarks()).then(v => this.seed(v)).catch(err => console.log(err));
@@ -33,7 +49,7 @@ export class RemarksComponent implements OnInit {
   seed(remarks: any) {
     this.drive.getFile(remarks.id).then(o => {
       this.id = remarks.id;
-      this.items = o;
+      this.items = o.items;
     });
   }
   requestFeature(content: any) {
@@ -65,7 +81,7 @@ export class RemarksComponent implements OnInit {
   delete(item: any) {
     this.alert.confirmDelete('Are You Sure?').then(p => {
       this.items = this.items.filter(f => f.id !== item.id);
-      this.drive.editFile(this.id, this.items).then(e => this.alert.success('Successfully Removed Item!')).catch(err => console.log(err));
+      this.drive.editFile(this.id, { 'items': this.items }).then(e => this.alert.success('Successfully Removed Item!')).catch(err => console.log(err));
     }).catch(err => err);
   }
   add() {
@@ -88,7 +104,7 @@ export class RemarksComponent implements OnInit {
         description: this.newGroup.get('description').value,
         type: this.newGroup.get('type').value
       });
-      this.drive.editFile(this.id, data).then(p => {
+      this.drive.editFile(this.id, { 'items': data }).then(p => {
         this.items = data;
         this.alert.success('Successfully Logged ' + this.title + '!');
         this.close('');

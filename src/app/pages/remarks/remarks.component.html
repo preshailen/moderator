@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-12" *ngIf="!backend">
     <div class="card card-user">
       <div class="card-header central">
         <h2>Actions</h2>
@@ -57,6 +57,34 @@
                 <td [ngClass]="{'feature': item.type === 'request', 'remark': item.type === 'remark', 'issue': item.type === 'issue'}">{{ item.title }}</td>
                 <td [ngClass]="{'feature': item.type === 'request', 'remark': item.type === 'remark', 'issue': item.type === 'issue'}">{{ item.description }}</td>
                 <td [ngClass]="{'feature': item.type === 'request', 'remark': item.type === 'remark', 'issue': item.type === 'issue'}"><button type="button" (click)="delete(item)" class="btn btn-danger btn-round">Delete <i class="nc-icon nc-simple-remove"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="0 >= items.length">
+          <div class="central">
+            <h4>No data to display!</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12" *ngIf="backend">
+    <div class="card card-user">
+      <div class="card-header central">
+        <h2>Feedback</h2>
+      </div>
+      <div class="card-body central">
+        <div class="row" *ngIf="items.length > 0">
+          <table class="table">
+            <thead class="text-primary">
+              <th>Title</th>
+              <th>Description</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items">
+                <td [ngClass]="{'feature': item.type === 'request', 'remark': item.type === 'remark', 'issue': item.type === 'issue'}">{{ item.title }}</td>
+                <td [ngClass]="{'feature': item.type === 'request', 'remark': item.type === 'remark', 'issue': item.type === 'issue'}">{{ item.description }}</td>
               </tr>
             </tbody>
           </table>

@@ -21,6 +21,11 @@ export class AuthComponent implements OnInit {
   }
   login(): void {
     this.auth.signIn(GoogleLoginProvider.PROVIDER_ID).then(h => {
+      if (h.email === 'ruthnampresh@gmail.com') {
+        localStorage.setItem('backend', 'yes');
+      } else {
+        localStorage.setItem('backend', 'no');
+      }
       localStorage.setItem('authToken', h.authToken);
       this.loggedIn = true;
       this.alert.successThenNav('Welcome ' + h.name + '!', '/admin');
@@ -28,6 +33,7 @@ export class AuthComponent implements OnInit {
   }
   logout(): void {
     this.auth.signOut().then(v => {
+      localStorage.removeItem('backend');
       localStorage.removeItem('role');
       localStorage.removeItem('authToken');
       localStorage.removeItem('configured');
