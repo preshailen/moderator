@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header central">
+        <h2>Moderated Batches</h2>
+      </div>
+      <div class="card-body">
+        <div class="container" *ngIf="feedback.length > 0">
+          <div *ngFor="let f of feedback" class="folder">
+            <h4>{{ f.name.toString().substr(0, f.name.toString().indexOf('.feedback')) }}</h4>
+            <div class="controls">
+              <button class="btn btn-danger btn-round" (click)="alert.navigate('view', folderId + '/' + f.id)">View  <i class="nc-icon nc-zoom-split"></i></button>
+              <button class="btn btn-warning btn-round" (click)="delete(f.id)">Delete <i class="nc-icon nc-simple-remove"></i></button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="0 >= feedback.length">
+          <div class="central">
+            <h4>No data to display!</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

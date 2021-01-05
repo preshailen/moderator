@@ -1,0 +1,70 @@
+<div class="row central">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h2>Manage Moderators</h2>
+      </div>
+      <div class="card-body">
+        <div class="row" *ngIf="moderators.length > 0" >
+          <table class="table">
+            <thead class="text-primary">
+              <th><i class="nc-icon nc-circle-10"></i> Name:</th>
+              <th><i class="nc-icon nc-email-85"></i> Email:</th>
+              <th><i class="nc-icon nc-simple-remove"></i> Action:</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of moderators">
+                <td>{{ m.name }}</td>
+                <td>{{ m.email }}</td>
+                <td><button type="button" (click)="delete(m.id)" class="btn btn-danger btn-round">Delete <i class="nc-icon nc-simple-remove"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="central" *ngIf="0 >= moderators.length">
+          <h4>No data to display!</h4>
+        </div>
+        <button type="button" (click)="open(content)" class="btn btn-success btn-round">Add  <i class="nc-icon nc-simple-add"></i></button>
+        <ng-template #content let-modal>
+          <div class="modal-header">
+            <div class="far-right">
+              <button type="button" class="close" aria-label="Close" (click)="close('Cross click')">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="centre">
+              <h4 class="modal-title" id="modal-basic-title">New Moderator</h4>
+            </div>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="newModeratorGroup" class="row">
+              <div class="form col-md-12">
+                <div class="form-group">
+                  <div class="single">
+                    <label for="name"><b>Name: </b></label>
+                    <input type="text" class="form-control" formControlName="name" id="name" minlength="2" required/>
+                  </div>
+                  <div *ngIf="n.name.errors?.minlength && (n.name.touched || n.name.dirty)" class="messages text-danger">Invalid Length!</div>
+                  <div *ngIf="n.name.errors?.required && (n.name.touched || n.name.dirty)" class="messages text-danger">Required!</div>
+                  <div *ngIf="n.name.errors?.nameAlreadyExists && (n.name.touched || n.name.dirty)" class="messages text-danger">Already Exists!</div>
+                </div>
+                <div class="form-group">
+                  <div class="single">
+                    <label for="email"><b>Email: </b></label>
+                    <input type="email" class="form-control" formControlName="email" id="email" required/>
+                  </div>
+                  <div *ngIf="n.email.errors?.email && (n.email.touched || n.email.dirty)" class="messages text-danger">Invalid Data!</div>
+                  <div *ngIf="n.email.errors?.required && (n.email.touched || n.email.dirty)" class="messages text-danger">Required!</div>
+                  <div *ngIf="n.email.errors?.alreadyExists && (n.email.touched || n.email.dirty)" class="messages text-danger">Already Exists!</div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success btn-round" (click)="add()">Create <i class="nc-icon nc-simple-add"></i></button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,7 @@ import { PDFJS } from './pdf/pdf';
 @Component({
   selector: 'app-create',
   templateUrl: './create.component.html',
-  styleUrls: ['./create.component.scss']
+  styleUrls: ['./create.component.scss', '../../shared/shared.scss']
 })
 export class CreateComponent implements OnInit {
   id: string;
@@ -84,9 +84,7 @@ export class CreateComponent implements OnInit {
           files.push(new Blob([new Uint8Array(array)], {type: 'image/png'}));
           fileNames.push(this.files[b].name.replace('.pdf', '.png'));
         }
-        this.as.load(this.ds.addFileBatch(this.uploadForm.get('name').value, files, fileNames, this.id)).then(v =>
-         this.as.successThenNav('Batch Created!', '/admin')
-        ).catch(err => this.as.error(err));
+        this.as.load(this.ds.addFileBatch(this.uploadForm.get('name').value, files, fileNames, this.id)).then(v => this.as.successThenNav('Batch Created!', '/admin')).catch(err => this.as.error(err));
       }).catch(err => console.log(err));
     } else {
       this.as.error('Error with form!');

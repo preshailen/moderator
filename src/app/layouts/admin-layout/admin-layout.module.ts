@@ -18,12 +18,18 @@ import { CreateComponent } from 'app/pages/create/create.component';
 import { AuthComponent } from 'app/pages/auth/auth.component';
 import { FeedbackComponent } from 'app/pages/feedback/feedback.component';
 import { ModerateComponent } from 'app/pages/moderate/moderate.component';
-import { ViewFeedbackComponent } from 'app/pages/view-feedback/view-feedback.component';
 
 // My Services
 import { AuthGuard } from 'app/_services/auth.guard';
 import { CreateResolver } from 'app/_services/createResolver';
-import { ModerateResolver } from 'app/_services/moderateResolver';
+import { ModeratorsComponent } from 'app/pages/moderators/moderators.component';
+import { TeacherGuard } from 'app/_services/teacher.guard';
+import { ViewComponent } from 'app/pages/view/view.component';
+import { ViewResolver } from 'app/_services/viewResolver';
+import { FeedbackListComponent } from 'app/pages/feedback-list/feedback-list.component';
+import { DataResolver } from 'app/_services/data.resolve';
+import { RemarksComponent } from 'app/pages/remarks/remarks.component';
+import { RemarksGuard } from 'app/_services/remarks.guard';
 
 const googleLoginOptions: LoginOpt = {
   prompt: 'consent',
@@ -54,11 +60,17 @@ export function providConfig() {
     CreateComponent,
     FeedbackComponent,
     ModerateComponent,
-    ViewFeedbackComponent
+    ModeratorsComponent,
+    ViewComponent,
+    FeedbackListComponent,
+    RemarksComponent
   ], providers: [
     AuthGuard,
     CreateResolver,
-    ModerateResolver,
+    DataResolver,
+    TeacherGuard,
+    ViewResolver,
+    RemarksGuard,
     { provide: AuthServiceConfig, useFactory: providConfig }
   ],
   bootstrap: [AuthComponent]

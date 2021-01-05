@@ -1,78 +1,142 @@
 <div class="row" *ngIf="configured">
-  <div class="row unconfigured col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="role">
-    <h2>Moderators</h2>
-      <div class="row">
-        <div *ngFor="let f of folders" class="col-md-4 folder">
-            <h3>{{ f.name }}</h3>
-            <button class="btn btn-primary" (click)="createBatch(f.id)">Create Batch  <i class="nc-icon nc-simple-add"></i></button>
-            <button class="btn btn-danger" (click)="viewFeedback(f.id)">View feedback  <i class="nc-icon nc-zoom-split"></i></button>
+  <div class="col-md-12">
+    <div class="card" *ngIf="!role">
+      <div class="card-header central">
+        <h2>Moderators</h2>
+      </div>
+      <div class="container card-body">
+        <div *ngFor="let folder of folders" class="folder">
+          <h4>{{ folder.name }}</h4>
+          <div class="controls">
+            <button class="btn btn-primary btn-round" (click)="alert.navigate('create', folder.id)">Create Batch  <i class="nc-icon nc-simple-add"></i></button>
+            <button class="btn btn-danger btn-round" (click)="alert.navigate('feedback-list', folder.id)">View feedback  <i class="nc-icon nc-zoom-split"></i></button>
+          </div>
         </div>
       </div>
-  </div>
-  <div class="row unconfigured col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!role">
-    <h2>Unmoderated Batches</h2>
-    <div class="row" *ngIf="moderates.length > 0">
-      <div *ngFor="let f of moderates" class="col-md-6 folder">
-        <h3>{{ f.name.toString().substr(0, f.name.toString().indexOf('.moderate')) }}</h3>
-        <button class="btn btn-primary" (click)="moderate(f.id)">Moderate  <i class="nc-icon nc-simple-add"></i></button>
+    </div>
+    <div class="card" *ngIf="role">
+      <div class="card-header central">
+        <h2>Unmoderated Batches</h2>
+      </div>
+      <div class="card-body">
+        <div class="container" *ngIf="moderates.length > 0">
+          <div *ngFor="let f of moderates" class="folder">
+            <h4>{{ f.name.toString().substr(0, f.name.toString().indexOf('.moderate')) }}</h4>
+            <div class="controls">
+              <button class="btn btn-primary btn-round" (click)="alert.navigate('moderate', f.id)">Moderate  <i class="nc-icon nc-simple-add"></i></button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="0 >= moderates.length">
+          <div class="central">
+            <h4>No data to display!</h4>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row" *ngIf="0 >= moderates.length">
-      <div class="col-md-12">
-        <h4>No data to display!</h4>
+    <div class="card" *ngIf="role">
+      <div class="card-header central">
+        <h2>Moderated Batches</h2>
       </div>
-    </div>
-    <h2>Moderated Batches</h2>
-    <div class="row" *ngIf="feedbacks.length > 0">
-      <div *ngFor="let f of feedbacks" class="col-md-6 folder">
-        <h3>{{ f.name.toString().substr(0, f.name.toString().indexOf('.feedback')) }}</h3>
-        <button class="btn btn-danger" (click)="feedback(f.id)">View  <i class="nc-icon nc-zoom-split"></i></button>
-      </div>
-    </div>
-    <div class="row" *ngIf="0 >= feedbacks.length">
-      <div class="col-md-12">
-        <h4>No data to display!</h4>
+      <div class="card-body">
+        <div class="container" *ngIf="feedbacks.length > 0">
+          <div *ngFor="let f of feedbacks" class="folder">
+            <h4>{{ f.name.toString().substr(0, f.name.toString().indexOf('.feedback')) }}</h4>
+            <div class="controls">
+              <button class="btn btn-danger btn-round" (click)="alert.navigate('feedback', f.id)">View  <i class="nc-icon nc-zoom-split"></i></button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="0 >= feedbacks.length">
+          <div class="central">
+            <h4>No data to display!</h4>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<div class="unconfigured row col-md-12 card card-user card-header form-group update ml-auto mr-auto" *ngIf="!configured">
-    <h2>Configure account</h2>
-    <form *ngIf="configForm" [formGroup]="configForm">
-        <div class="input-item">
-          <h4>Role</h4>
+<div class="row central" *ngIf="!configured">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h2>Configure Account</h2>
+      </div>
+      <div class="card-body">
+        <form *ngIf="configForm" [formGroup]="configForm">
+          <h5>Role</h5>
           <select class="form-control" formControlName="role" required>
             <option *ngFor="let r of roles" [ngValue]="r"> {{ r }}</option>
           </select>
-        </div>
-        <div class="input-item" *ngIf="role">
-          <h4>Moderators</h4>
-          <table formArrayName="moderators">
-            <tr>
-              <th class="item">Name</th>
-              <th class="item">Email</th>
-              <th class="action">Action</th>
-            </tr>
-            <tr *ngFor="let a of f.controls; let i = index" [formGroupName]="i">
-              <td class="item">
-                <input class="form-control" type="text" formControlName="name" minlength="2" required/>
-                <div *ngIf="getVal(i).name.errors?.required && (getVal(i).name.touched || getVal(i).name.dirty)" class="messages  text-danger">Required!</div>
-                <div *ngIf="getVal(i).name.errors?.minlength && (getVal(i).name.touched || getVal(i).name.dirty)" class="messages  text-danger">Minimum length of 2!</div>
-              </td>
-              <td class="item">
-                <input class="form-control" type="email" formControlName="email" required/>
-                <div *ngIf="getVal(i).email.errors?.required && (getVal(i).email.touched || getVal(i).email.dirty)" class="messages  text-danger">Required!</div>
-                <div *ngIf="getVal(i).email.errors?.email && (getVal(i).email.touched || getVal(i).email.dirty)" class="messages  text-danger">Invalid email!</div>
-              </td>
-              <td class="action"><button class="btn btn-danger" type="button" (click)="deleteModerator(i)">Delete  <i class="nc-icon nc-simple-remove"></i></button></td>
-            </tr>
-          </table>
-          <div class="button-wrapper">
-            <button type="button" class="btn btn-info btn-add" (click)="addModerator()">Add  <i class="nc-icon nc-simple-add"></i>
-            </button>
+          <div *ngIf="c.value">
+            <div *ngIf="c.value === 'Teacher'">
+              <h5>Moderators</h5>
+              <table class="table" formArrayName="moderators">
+                <thead class="text-primary">
+                  <th><i class="nc-icon nc-circle-10"></i>  Name:</th>
+                  <th><i class="nc-icon nc-email-85"></i>  Email:</th>
+                  <th><i class="nc-icon nc-calendar-60"></i>  Action:</th>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of f.controls; let i = index" [formGroupName]="i">
+                    <td>{{ item.get('name').value }}</td>
+                    <td>{{ item.get('email').value }}</td>
+                    <td><button  type="button" (click)="f.removeAt(i)" class="btn btn-warning btn-round">Delete <i class="nc-icon nc-simple-remove"></i></button></td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button" (click)="open(content)" class="btn btn-info btn-round">Add  <i class="nc-icon nc-simple-add"></i></button><br>
+              <ng-template #content let-modal>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="modal-header">
+                      <div class="far-right">
+                        <button type="button" class="close" aria-label="Close" (click)="close('Cross click')">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="centre">
+                        <h4 class="modal-title" id="modal-basic-title">New Moderator</h4>
+                      </div>
+                    </div>
+                    <div class="modal-body">
+                      <form [formGroup]="newModeratorForm" class="row">
+                        <div class="form col-md-12">
+                          <div class="form-group">
+                            <div class="single">
+                              <label for="name"><b>Name: </b></label>
+                              <input type="text" class="form-control" formControlName="name" id="name" minlength="2" required/>
+                            </div>
+                            <div *ngIf="n.name.errors?.minlength && (n.name.touched || n.name.dirty)" class="messages text-danger">Invalid Length!</div>
+                            <div *ngIf="n.name.errors?.required && (n.name.touched || n.name.dirty)" class="messages text-danger">Required!</div>
+                            <div *ngIf="n.name.errors?.nameAlreadyExists && (n.name.touched || n.name.dirty)" class="messages text-danger">Already Exists!</div>
+                          </div>
+                          <div class="form-group">
+                            <div class="single">
+                              <label for="email"><b>Email: </b></label>
+                              <input type="email" class="form-control" formControlName="email" id="email" required/>
+                            </div>
+                            <div *ngIf="n.email.errors?.email && (n.email.touched || n.email.dirty)" class="messages text-danger">Invalid Data!</div>
+                            <div *ngIf="n.email.errors?.required && (n.email.touched || n.email.dirty)" class="messages text-danger">Required!</div>
+                            <div *ngIf="n.email.errors?.alreadyExists && (n.email.touched || n.email.dirty)" class="messages text-danger">Already Exists!</div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-success btn-round" (click)="add()">Add <i class="nc-icon nc-simple-add"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+              <button  type="button" (click)="configureTeacher()" class="btn btn-success btn-round">Configure Teacher Account  <i class="nc-icon nc-settings"></i></button>
+            </div>
+            <div *ngIf="c.value === 'Moderator'">
+              <button  type="button" (click)="configureModerator()" class="btn btn-success btn-round">Configure Moderator Account <i class="nc-icon nc-settings"></i></button>
+            </div>
           </div>
-        </div>
-    </form>
-    <button *ngIf="role" id="btnAdd" type="button" (click)="configModerator()" class="btn btn-success btn-cust">Configure Teacher Account  <i class="nc-icon nc-cloud-upload-94"></i></button>
-    <button *ngIf="((!role) && (configForm) && (configForm.get('role').value.length > 0))" id="btnAdd" type="button" (click)="configTeacher()" class="btn btn-success btn-cust">Configure Moderator Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>

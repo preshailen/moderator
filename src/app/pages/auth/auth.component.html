@@ -1,13 +1,13 @@
 <div class="row">
   <div class="col-md-12">
     <div class="card card-user">
-      <div class="card-header form-group">
-          <div class="update ml-auto mr-auto" *ngIf="!loggedIn">
-            <button type="button" class="btn btn-success btn-round" (click)="login()">Login  <img src="assets/img/drive.png"></button>
-          </div>
-          <div class="update ml-auto mr-auto"*ngIf="loggedIn">
-            <button type="button" class="btn btn-danger btn-round" (click)="logout()">Logout  <img src="assets/img/drive.png"></button>
-          </div>
+      <div class="card-header central">
+        <div class="update ml-auto mr-auto" *ngIf="!loggedIn">
+          <button type="button" class="btn btn-success btn-round" (click)="login()">Login  <img src="assets/img/drive.png"></button>
+        </div>
+        <div class="update ml-auto mr-auto"*ngIf="loggedIn">
+          <button type="button" class="btn btn-danger btn-round" (click)="logout()">Logout  <img src="assets/img/drive.png"></button>
+        </div>
       </div>
     </div>
   </div>

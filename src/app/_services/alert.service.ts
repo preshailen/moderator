@@ -141,4 +141,11 @@ export class AlertService {
       }
     );
   }
+  navigate(path: string, id: string) {
+    if (id) {
+      this.router.navigate([path + '/' + id]);
+    } else {
+      this.router.navigate([path]);
+    }
+  }
 }

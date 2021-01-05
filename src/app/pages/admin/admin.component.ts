@@ -1,30 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { DriveService } from 'app/_services/drive.service';
-import { FormGroup, FormControl, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormArray, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { AlertService } from 'app/_services/alert.service';
 import { Router } from '@angular/router';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.scss']
+  styleUrls: ['./admin.component.scss', '../../shared/shared.scss']
 })
 export class AdminComponent implements OnInit {
+  private modalRef: NgbModalRef;
   configured = false;
   configForm: FormGroup;
+  newModeratorForm: FormGroup;
   roles = ['Moderator', 'Teacher'];
   role = false;
   files = [];
   folders = [];
   moderates = [];
   feedbacks = [];
-  constructor(private ds: DriveService, public general: AlertService, private router: Router) { }
+  constructor(private drive: DriveService, public alert: AlertService,  private modal: NgbModal, private router: Router) { }
   ngOnInit() {
-    this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
+    this.drive.getFiles().then(x => this.sort(x)).catch(err => err);
   }
   sort(val: any) {
-    if (val.files.length > 0) {
-      this.files = val.files;
+    if (val.files.length) {
+      this.files = (val as any).files;
       const config = this.files.find(f => (f as any).name === 'config.json');
       if (config) {
         this.configured = true;
@@ -38,89 +41,100 @@ export class AdminComponent implements OnInit {
       this.setup();
     }
   }
+  config(config: any) {
+    this.drive.getFile(config.id).then(c => {
+      localStorage.setItem('configured', 'true');
+      if (c.role === 'Moderator') {
+        this.role = true;
+        localStorage.setItem('role', 'Moderator');
+        this.moderates = this.files.filter(o => (o.name as string).endsWith('.moderate'));
+        this.feedbacks = this.files.filter(o => (o.name as string).endsWith('.feedback'));
+      } else if (c.role === 'Teacher') {
+        this.role = false;
+        localStorage.setItem('role', 'Teacher');
+        for (let r = 0; r < c.moderators.length; r++) { this.folders.push(this.files.find(k => (k.mimeType === 'application/vnd.google-apps.folder') && (k.name === c.moderators[r].name))); }
+      }
+    });
+  }
   setup() {
     this.configForm = new FormGroup({
       role: new FormControl('', Validators.required),
       moderators: new FormArray([])
     });
-    this.configForm.get('role').valueChanges.subscribe(i => {
-      if (i === 'Teacher') {
-        this.role = true;
-      } else if (i === 'Moderator') {
-        this.role = false;
-      }
-    });
   }
-  configModerator() {
-    if (!this.configForm.invalid) {
+  configureModerator() {
+    const body = {
+      role: this.configForm.get('role').value
+    };
+    this.alert.load(this.drive.addSyncFile('config.json', body)).then(m => {
+      this.configForm = null;
+      this.configured = true;
+      this.config(m);
+    }).catch(err => this.alert.error(err));
+  }
+  configureTeacher() {
+    if (this.f.length > 0) {
       const moderators = [];
       const permissions = [];
       const folders = [];
-      for (let y = 0; y < (this.configForm.get('moderators') as FormArray).length; y++) {
-        folders.push(this.ds.addFolder((this.configForm.get('moderators') as FormArray).at(y).get('name').value));
+      for (let r = 0; r < this.f.length; r++) {
+        folders.push(this.drive.addFolder(this.f.at(r).get('name').value));
       }
-      this.general.load(Promise.all(folders)).then(o => {
-        for (let m = 0; m < o.length; m++) {
+      this.alert.load(Promise.all(folders)).then(u => {
+        for (let h = 0; h < u.length; h++) {
           moderators.push({
-            name: (this.configForm.get('moderators') as FormArray).at(m).get('name').value,
-            email: (this.configForm.get('moderators') as FormArray).at(m).get('email').value,
-            id: (o[m] as any).id
+            name: this.f.at(h).get('name').value,
+            email: this.f.at(h).get('email').value,
+            id: (u[h] as any).id
           });
-          permissions.push(this.ds.addPermission((o[m] as any).id, (this.configForm.get('moderators') as FormArray).at(m).get('email').value));
+          permissions.push(this.drive.addPermission((u[h] as any).id, this.f.at(h).get('email').value));
         }
         const body = {
           role: this.configForm.get('role').value,
           moderators: moderators
         };
-        permissions.push(this.ds.addSyncFile('config.json', body));
-        this.general.load(Promise.all(permissions)).then(j => {
-          this.role = false;
+        permissions.push(this.drive.addSyncFile('config.json', body));
+        this.alert.load(Promise.all(permissions)).then(o => {
           this.configForm = null;
-          this.ds.getFiles().then(x => this.sort(x)).catch(err => err);
+          this.drive.getFiles().then(x => this.sort(x)).catch(err => err);
         });
       });
     } else {
-      this.general.error('Invalid Form!');
+      this.alert.error('No Moderators Have Been Added!');
     }
   }
-  configTeacher() {
-    const body = {
-      role: this.configForm.get('role').value
-    };
-    this.general.load(this.ds.addSyncFile('config.json', body)).then(m => {
-      this.role = false;
-      this.configForm = null;
-      this.config(m);
-    }).catch(err => this.general.error(err));
+  open(content: any) {
+    this.newModeratorForm = new FormGroup({
+      name: new FormControl(null, [Validators.required, Validators.minLength(2), this.existingNameValidator(this.f)]),
+      email: new FormControl(null, [Validators.required, this.customEmailValidator, this.existingValidator(this.f)])
+    });
+    this.modalRef = this.modal.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'lg', keyboard: false, backdrop: 'static' });
+    this.modalRef.result.then((result) => {}, (reason) => {});
   }
-  config(config: any) {
-    this.ds.getFile(config.id).then(
-      c => {
-        if (c.role === 'Moderator') {
-          this.role = false;
-          this.moderates = this.files.filter(o => (o.name as string).endsWith('.moderate'));
-          this.feedbacks = this.files.filter(o => (o.name as string).endsWith('.feedback'));
-        } else if (c.role === 'Teacher') {
-          this.role = true;
-          for (let r = 0; r < c.moderators.length; r++) { this.folders.push(this.files.find(k => (k.mimeType === 'application/vnd.google-apps.folder') && (k.name === c.moderators[r].name))); }
-        }
-      }
-    );
+  close(reason: string) {
+    this.modalRef.close();
+    this.newModeratorForm = null;
   }
-  addModerator() {
-    (this.configForm.get('moderators') as FormArray).push(new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(2)]),
-      email: new FormControl('', [Validators.required, this.customEmailValidator])
-    }));
+  add() {
+    if (this.newModeratorForm.invalid) {
+      this.newModeratorForm.markAllAsTouched();
+    } else {
+      this.f.push(new FormGroup({
+        name: new FormControl(this.newModeratorForm.get('name').value),
+        email: new FormControl(this.newModeratorForm.get('email').value)
+      }));
+      this.alert.success('Added Moderator!');
+      this.close('');
+    }
   }
   get f() {
     return this.configForm.get('moderators') as FormArray;
   }
-  getVal(id: number) {
-    return ((this.configForm.get('moderators') as FormArray).at(id) as FormGroup).controls;
+  get c() {
+    return this.configForm.get('role') as FormControl;
   }
-  deleteModerator(id: number) {
-    (this.configForm.get('moderators') as FormArray).removeAt(id);
+  get n() {
+    return (this.newModeratorForm as FormGroup).controls;
   }
   customEmailValidator(control: AbstractControl): ValidationErrors {
     if (!control.value) {
@@ -128,16 +142,24 @@ export class AdminComponent implements OnInit {
     }
     return Validators.email(control);
   }
-  createBatch(val: any) {
-    this.router.navigate(['create/' + val]);
+  existingValidator(moderators: FormArray): ValidatorFn {
+    return (control: AbstractControl) => {
+      if (control.value) {
+        if (moderators.getRawValue().filter(o => o.email === control.value.trim()).length > 0) {
+          return { 'alreadyExists': true };
+        }
+      }
+      return null;
+    };
   }
-  viewFeedback(val: any) {
-    this.router.navigate(['view/' + val]);
-  }
-  moderate(val: any) {
-    this.router.navigate(['moderate/' + val]);
-  }
-  feedback(val: any) {
-    this.router.navigate(['feedback/' + val]);
+  existingNameValidator(moderators: FormArray): ValidatorFn {
+    return (control: AbstractControl) => {
+      if (control.value) {
+        if (moderators.getRawValue().filter(o => o.name === control.value.trim()).length > 0) {
+          return { 'nameAlreadyExists': true };
+        }
+      }
+      return null;
+    };
   }
 }
