@@ -30,6 +30,7 @@ import { FeedbackListComponent } from 'app/pages/feedback-list/feedback-list.com
 import { DataResolver } from 'app/_services/data.resolve';
 import { RemarksComponent } from 'app/pages/remarks/remarks.component';
 import { RemarksGuard } from 'app/_services/remarks.guard';
+import { ResourcesComponent } from 'app/pages/resources/resources.component';
 
 const googleLoginOptions: LoginOpt = {
   prompt: 'consent',
@@ -63,7 +64,8 @@ export function providConfig() {
     ModeratorsComponent,
     ViewComponent,
     FeedbackListComponent,
-    RemarksComponent
+    RemarksComponent,
+    ResourcesComponent
   ], providers: [
     AuthGuard,
     CreateResolver,

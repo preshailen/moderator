@@ -11,10 +11,11 @@ export interface RouteInfo {
 export const ROUTES: RouteInfo[] = [
     { path: '/admin',     title: 'Admin', icon: 'nc-bank', class: '' },
     { path: '/moderators', title: 'Moderators', icon: 'nc-circle-10', class: '' },
-    { path: '/remarks', title: 'Remarks', icon: 'nc-chat-33', class: ' '},
+    { path: '/remarks', title: 'Remarks', icon: 'nc-chat-33', class: ''},
     { path: ' ', title: ' ', icon: ' ', class: ' '},
     { path: ' ', title: ' ', icon: ' ', class: ' '},
-    { path: '/icons', title: 'Icons', icon: 'nc-diamond',    class: ' '},
+    /*{ path: '/icons', title: 'Icons', icon: 'nc-diamond',    class: ' '},*/
+    { path: '/resources', title: 'Resources', icon: 'nc-atom', class: ''},
     { path: '/auth', title: 'Authorization', icon: 'nc-lock-circle-open', class: ''}
 ];
 

@@ -16,6 +16,7 @@ import { FeedbackListComponent } from 'app/pages/feedback-list/feedback-list.com
 import { DataResolver } from 'app/_services/data.resolve';
 import { RemarksComponent } from 'app/pages/remarks/remarks.component';
 import { RemarksGuard } from 'app/_services/remarks.guard';
+import { ResourcesComponent } from 'app/pages/resources/resources.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'auth', component: AuthComponent},
@@ -25,6 +26,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'view/:folder/:id', canActivate: [AuthGuard], component: ViewComponent, resolve: { data: DataResolver } },
     { path: 'feedback-list/:id', canActivate: [AuthGuard], component: FeedbackListComponent, resolve: { data: ViewResolver } },
     { path: 'icons', component: IconsComponent },
+    { path: 'resources', component: ResourcesComponent },
     { path: 'remarks', component: RemarksComponent, canActivate: [RemarksGuard] },
     { path: 'moderate/:id', canActivate: [AuthGuard], component: ModerateComponent, resolve: { data: DataResolver } },
     { path: 'feedback/:id', canActivate: [AuthGuard], component: FeedbackComponent, resolve: { data: DataResolver } }
