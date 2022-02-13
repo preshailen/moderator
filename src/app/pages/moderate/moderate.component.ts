@@ -34,6 +34,7 @@ export class ModerateComponent implements OnInit, AfterViewInit {
         currentFileChosen: new FormControl()
       });
       this.mForm.get('currentFileChosen').valueChanges.subscribe(b => {
+				console.log(b)
         this.editor.editorInstance.loadImageFromURL('https://cors-anywhere.herokuapp.com/https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
           this.editor.editorInstance.resizeCanvasDimension({ width: (y.newWidth * 0.5), height: y.newHeight });
         }).catch(err => console.log(err));
@@ -43,6 +44,9 @@ export class ModerateComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     document.getElementsByClassName('tui-image-editor-header')[0].remove();
   }
+	goBack() {
+		this.as.navigate('moderator-list');
+	}
   save() {
     if (!this.mForm.get('currentFileChosen').value) {
       this.as.error('No File Chosen!');

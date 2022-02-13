@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthorizationService } from 'app/_services/auth.service';
 
 
 export interface RouteInfo {
@@ -6,17 +7,19 @@ export interface RouteInfo {
     title: string;
     icon: string;
     class: string;
+		role: string;
 }
 
 export const ROUTES: RouteInfo[] = [
-    { path: '/admin',     title: 'Admin', icon: 'nc-bank', class: '' },
-    { path: '/moderators', title: 'Moderators', icon: 'nc-circle-10', class: '' },
-    { path: '/remarks', title: 'Remarks', icon: 'nc-chat-33', class: ''},
-    { path: ' ', title: ' ', icon: ' ', class: ' '},
-    { path: ' ', title: ' ', icon: ' ', class: ' '},
-    /*{ path: '/icons', title: 'Icons', icon: 'nc-diamond',    class: ' '},*/
-    { path: '/resources', title: 'Resources', icon: 'nc-atom', class: ''},
-    { path: '/auth', title: 'Authorization', icon: 'nc-lock-circle-open', class: ''}
+	  { path: '/instructions', title: 'Instructions', icon: 'nc-paper', class: '', role: 'Unconfigured' },
+		{ path: '/configure', title: 'Configure', icon: 'nc-settings-gear-65', class: '', role: 'Unconfigured' },
+		{ path: '/create-batch', title: 'Create Batch', icon: 'nc-cloud-upload-94', class: '', role: 'Teacher' },
+		{ path: '/view-feedback', title: 'View Feedback', icon: 'nc-glasses-2', class: '', role: 'Teacher' },
+    { path: '/moderator-list', title: 'Moderate', icon: 'nc-ruler-pencil', class: '', role: 'Moderator' },
+    // { path: '/icons', title: 'Icons', icon: 'nc-diamond', class: ' ', role: 'Unconfigured' },
+    { path: '/rt', title: '', icon: '', class: '', role: 'Unconfigured' },
+		{ path: '/rt', title: '', icon: '', class: '', role: 'Unconfigured' },
+		{ path: '/logout', title: 'Logout', icon: 'nc-button-power', class: '', role: 'Unconfigured' },
 ];
 
 @Component({
@@ -28,7 +31,17 @@ export const ROUTES: RouteInfo[] = [
 
 export class SidebarComponent implements OnInit {
     public menuItems: any[];
+		constructor(public aService: AuthorizationService) { }
     ngOnInit() {
-        this.menuItems = ROUTES.filter(menuItem => menuItem);
+			this.aService.initRole();
+			this.aService.$role.subscribe(p => {
+				if (p === 'Unconfigured') {
+					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured');
+				} else if (p === 'Teacher') {
+					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured' || menuItem.role === 'Teacher')
+				} else if (p === 'Moderator') {
+					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured' || menuItem.role === 'Moderator')
+				}
+			})
     }
 }

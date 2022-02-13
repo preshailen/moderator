@@ -1,15 +1,14 @@
-
 <div class="sidebar-wrapper">
-  <div class="logo">
-    <a href="/#" class="simple-text logo-mini">
-      <div class="logo-image-small">
-        <img src="assets/img/m-logo.png">
-      </div>
+    <div class="logo">
+        <a href="/#" class="simple-text logo-mini">
+            <div class="logo-image-small">
+                <img src="assets/img/m-logo.png">
+            </div>
+        </a>
+        <a href="/#" class="simple-text logo-normal">
+      e-Moderator
     </a>
-    <a href="/#" class="simple-text logo-normal">
-      Moderator
-    </a>
-  </div>
+    </div>
     <ul class="nav">
         <li *ngFor="let menuItem of menuItems" routerLinkActive="active" class="{{menuItem.class}}">
             <a [routerLink]="[menuItem.path]">

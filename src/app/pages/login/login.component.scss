@@ -1,0 +1,19 @@
+#container {
+    position: fixed;
+    text-align: center;
+    width: 50%;
+    height: 50%;
+    padding: 10px;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    #logo {
+        position: relative;
+        height: 15rem;
+        width: 15rem;
+    }
+    #controls {
+        align-items: center;
+    }
+}

@@ -3,19 +3,21 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AlertService } from './alert.service';
-import { DriveService } from './drive.service';
+import { AuthorizationService } from './auth.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private as: AlertService, private ds: DriveService) {}
+  constructor(private as: AlertService, private auService: AuthorizationService) {}
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
       return next.handle(req).pipe(
             catchError(error => {
-              console.log(error);
+							console.log(error);
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
-                  localStorage.removeItem('authToken');
-                  this.as.errorThenNav('Not Logged In!', 'auth');
+                  this.auService.$loggedIn.next(false);
+									localStorage.removeItem('eModAuthToken');
+									localStorage.removeItem('eModEmail');
+									this.as.errorThenNav('Session expired!', '/login');
                   return throwError(error.statusText);
                 }
                 const applicationError = error.headers.get('Application-Error');
@@ -30,6 +32,8 @@ export class ErrorInterceptor implements HttpInterceptor {
                         if (serverError[key]) {
                             modalStateErrors += serverError[key] + '\n';
                         }}}
+												console.log(modalStateErrors);
+												console.log(serverError);
                 return throwError(modalStateErrors || serverError || 'Server Error');
             }
         }));
@@ -40,3 +44,4 @@ export const ErrorInterceptorProvider = {
     useClass: ErrorInterceptor,
     multi: true
 };
+

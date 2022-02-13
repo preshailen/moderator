@@ -7,16 +7,6 @@ import { AlertService } from './alert.service';
 export class TeacherGuard implements CanActivate {
   constructor(private alert: AlertService, private drive: DriveService) { }
   canActivate(): boolean {
-    if (this.drive.loggedIn()) {
-      if (localStorage.getItem('role') === 'Teacher') {
-        return true;
-      } else {
-        this.alert.errorThenNav('Not A Teacher!', '/admin');
-        return false;
-      }
-    } else {
-      this.alert.errorThenNav('Not Logged In!', 'auth');
-      return false;
-    }
+    return true;
   }
 }

@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { retryBackoff } from 'backoff-rxjs';
+import { BehaviorSubject } from 'rxjs';
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class DriveService {
   apiKey = 'AIzaSyBVlg0RWo6AgOUoQ_w396_K2hJAZZNn8Js';
+
   constructor(private http: HttpClient) { }
   getOptions(): {} {
     const headers = new HttpHeaders({
-      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Authorization': 'Bearer ' + localStorage.getItem('eModAuthToken'),
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
@@ -18,7 +21,7 @@ export class DriveService {
   }
   getPngOptions(): {} {
     const headers = new HttpHeaders({
-      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Authorization': 'Bearer ' + localStorage.getItem('eModAuthToken'),
       'Content-Type': 'image/png',
       'Accept': 'image/png',
     });
@@ -88,7 +91,7 @@ export class DriveService {
       }, err => reject(err), () => {});
     });
   }
-  addFileBatch(batchName: string, files: File[], fileNames: string[], parentId: string): Promise<any> {
+  addFileBatch(batchName: string, files: File[], fileNames: string[], parentId: string, dueDate: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
       const data = [];
       for (let f = 0; f < files.length; f++) {
@@ -104,7 +107,13 @@ export class DriveService {
         });
         await result.then(u => data.push(u)).catch(err => reject(err));
       }
-      this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', { data }, this.getOptions()).toPromise().then((l) => {
+			const body = {
+				batchName: batchName,
+				batchId: parentId,
+				dueDate: dueDate,
+				data: data
+			}
+      this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise().then((l) => {
         const name = batchName + '.moderate';
         this.http.patch('https://www.googleapis.com/drive/v3/files/' + (l as any).id + '?addParents=' + parentId, { name: name }, this.getOptions()).toPromise().then((q) => {
           resolve(q);
@@ -123,13 +132,6 @@ export class DriveService {
     const data = { 'role': 'writer', 'type': 'user', 'emailAddress': emailAddress };
     return this.http.post('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions?key' + this.apiKey, data, this.getOptions()).toPromise();
   }
-  loggedIn(): boolean {
-    if (localStorage.getItem('authToken')) {
-      return true;
-    } else {
-      return false;
-    }
-  }
   checkFolder(id: string): Promise<boolean> {
     return this.http.get<boolean>('https://www.googleapis.com/drive/v3/files/' + id, this.getOptions()).toPromise();
   }
@@ -139,7 +141,7 @@ export class DriveService {
   deleteAll(id: string, ids: any[]) {
     const result = new Promise(async (resolve, reject) => {
       for (let r = 0; r < ids.length; r++) {
-        this.http.delete('https://www.googleapis.com/drive/v3/files/' + ids[r], this.getOptions()).pipe(retryBackoff({ initialInterval: 100, maxRetries: 12, resetOnSuccess: true })).subscribe(i => {
+        this.http.delete('https://www.googleapis.com/drive/v3/files/' + ids[r].id, this.getOptions()).pipe(retryBackoff({ initialInterval: 100, maxRetries: 12, resetOnSuccess: true })).subscribe(i => {
         }, err => reject(err));
       }
       this.http.delete('https://www.googleapis.com/drive/v3/files/' + id, this.getOptions()).pipe(retryBackoff({ initialInterval: 100, maxRetries: 12, resetOnSuccess: true })).subscribe(i => {

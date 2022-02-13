@@ -1,0 +1,33 @@
+<div class="row central">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h2>Batches to moderate</h2>
+            </div>
+            <div class="card-body">
+                <form *ngIf="batchForm" [formGroup]="batchForm">
+                    <h5>Batches</h5>
+                    <table class="table" formArrayName="batches">
+                        <thead class="text-primary">
+                            <th><i class="nc-icon nc-circle-10"></i> Name:</th>
+                            <th><i class="nc-icon nc-email-85"></i> Moderator:</th>
+                            <th><i class="nc-icon nc-email-85"></i> Due Date:</th>
+                            <th><i class="nc-icon nc-calendar-60"></i> Action:</th>
+                        </thead>
+                        <tbody *ngIf="batches.length > 0">
+                            <tr *ngFor="let item of batches.controls; let i = index" [formGroupName]="i">
+                                <td>{{ item.get('name').value }}</td>
+                                <td>{{ item.get('moderator').value }}</td>
+                                <td>{{ item.get('dueDate').value }}</td>
+                                <td><button type="button" (click)="moderate(i)" class="btn btn-primary">Moderate <i class="nc-icon nc-ruler-pencil"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="batches.length <= 0">
+                        <b>No batches to moderate yet!</b>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

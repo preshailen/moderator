@@ -1,0 +1,113 @@
+<div class="row central">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h2>Create Moderation Batch</h2>
+            </div>
+            <div class="card-body">
+                <form *ngIf="batchForm" [formGroup]="batchForm">
+                    <h5>Batches</h5>
+                    <table class="table" formArrayName="batches">
+                        <thead class="text-primary">
+                            <th><i class="nc-icon nc-circle-10"></i> Name:</th>
+                            <th><i class="nc-icon nc-email-85"></i> Moderator:</th>
+                            <th><i class="nc-icon nc-email-85"></i> Due Date:</th>
+                            <th><i class="nc-icon nc-calendar-60"></i> Action:</th>
+                        </thead>
+                        <tbody *ngIf="batches.length > 0">
+                            <tr *ngFor="let item of batches.controls; let i = index" [formGroupName]="i">
+                                <td>{{ item.get('name').value }}</td>
+                                <td>{{ item.get('moderator').value }}</td>
+                                <td>{{ item.get('dueDate').value }}</td>
+                                <td><button type="button" (click)="delete(i)" class="btn btn-danger">Delete <i class="nc-icon nc-simple-remove"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div *ngIf="batches.length <= 0">
+                        <b>No batches to display yet!</b>
+                    </div>
+                    <div>
+                        <button type="button" (click)="openBatch(content)" class="btn btn-primary">Create New Batch <i class="nc-icon nc-simple-add"></i></button>
+                        <ng-template #content let-modal>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="modal-header">
+                                        <div class="far-right">
+                                            <button type="button" class="close" aria-label="Close" (click)="close('Cross click')"><span aria-hidden="true">&times;</span></button>
+                                        </div>
+                                        <div class="centre">
+                                            <h4 class="modal-title" id="modal-basic-title">New Batch</h4>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form [formGroup]="newBatchForm" class="row">
+                                            <div class="form col-md-12">
+                                                <div class="form-group">
+                                                    <div class="single">
+                                                        <label for="name"><b>Name: </b></label>
+                                                        <input type="text" class="form-control" formControlName="name" id="name" minlength="2" required/>
+                                                    </div>
+                                                    <div *ngIf="n.name.errors?.minlength && (n.name.touched || n.name.dirty)" class="messages text-danger">Invalid Length!</div>
+                                                    <div *ngIf="n.name.errors?.required && (n.name.touched || n.name.dirty)" class="messages text-danger">Required!</div>
+                                                    <div *ngIf="n.name.errors?.nameAlreadyExists && (n.name.touched || n.name.dirty)" class="messages text-danger">Already Exists!</div>
+                                                    <div *ngIf="n.name.errors?.invalidCharacter && (n.name.touched || n.name.dirty)" class="messages text-danger">; Is An Invalid Character!</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="single">
+                                                        <label for="moderator"><b>Moderator: </b></label>
+                                                        <select class="form-control" formControlName="moderator" id="moderator" required>
+																												<option *ngFor="let m of moderators" [ngValue]="m">
+																													{{ m.name }}
+																												</option>
+																											</select>
+                                                    </div>
+                                                    <div *ngIf="n.moderator.errors?.required && (n.moderator.touched || n.moderator.dirty)" class="messages text-danger">Required!</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="single">
+                                                        <label for="dueDate"><b>Due Date: </b></label>
+                                                        <input type="date" class="form-control" formControlName="dueDate" id="dueDate" required/>
+                                                    </div>
+                                                    <div *ngIf="n.dueDate.errors?.dueDate && (n.dueDate.touched || n.dueDate.dirty)" class="messages text-danger">Invalid Date!</div>
+                                                    <div *ngIf="n.dueDate.errors?.required && (n.dueDate.touched || n.dueDate.dirty)" class="messages text-danger">Required!</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button id="btnAdd" type="button" (click)="file.click()" class="btn btn-info">Select Files  <i class="nc-icon nc-tap-01"></i>
+																										<i class="icofont icofont-binary">
+																												<input (change)="onFileChanges($event)" id="fileUploader"  style="display: none" type="file" accept=".pdf" #file multiple/>
+																										</i>
+																									</button>
+                                                    <div class="row" *ngIf="files.length > 0">
+                                                        <table class="table">
+                                                            <thead class="text-primary">
+                                                                <th><i class="nc-icon nc-circle-10"></i> Name:</th>
+                                                                <th><i class="nc-icon nc-ruler-pencil"></i> Size:</th>
+                                                                <th><i class="nc-icon nc-calendar-60"></i> Last Modified:</th>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr *ngFor="let f of files">
+                                                                    <td>{{ f.name }}</td>
+                                                                    <td>{{ getSize(f.size) }}</td>
+                                                                    <td>{{ f.lastModifiedDate.toString().substr(0, f.lastModifiedDate.toString().indexOf('GMT') - 1) }}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-success" (click)="add()">Add <i class="nc-icon nc-simple-add"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="holder" hidden></div>
+<div id="show"></div>
