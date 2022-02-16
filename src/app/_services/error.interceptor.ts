@@ -11,7 +11,6 @@ export class ErrorInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
       return next.handle(req).pipe(
             catchError(error => {
-							console.log(error);
             if (error instanceof HttpErrorResponse) {
                 if (error.status === 401) {
                   this.auService.$loggedIn.next(false);
@@ -22,7 +21,6 @@ export class ErrorInterceptor implements HttpInterceptor {
                 }
                 const applicationError = error.headers.get('Application-Error');
                 if (applicationError) {
-                    console.log(applicationError);
                     return throwError(applicationError);
                 }
                 const serverError = error.error;
@@ -32,8 +30,6 @@ export class ErrorInterceptor implements HttpInterceptor {
                         if (serverError[key]) {
                             modalStateErrors += serverError[key] + '\n';
                         }}}
-												console.log(modalStateErrors);
-												console.log(serverError);
                 return throwError(modalStateErrors || serverError || 'Server Error');
             }
         }));

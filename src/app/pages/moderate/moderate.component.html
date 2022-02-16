@@ -7,7 +7,7 @@
             </div>
             <div class="card-header central">
                 <h2>Moderate</h2>
-                <button class="btn btn-primary" (click)="save()">Save Annotations <i class="nc-icon nc-cloud-upload-94"></i></button>
+                <button type="button" (click)="save()" class="btn btn-primary" *ngIf="$changed | async">Save Annotations <i class="nc-icon nc-cloud-upload-94"></i></button>
                 <button type="button" (click)="finish(content)" class="btn btn-success">Finish batch <i class="nc-icon nc-spaceship"></i></button>
                 <ng-template #content let-modal>
                     <div class="modal-header">
@@ -35,7 +35,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success btn-round" (click)="finishBatch()">Finish Moderation <i class="nc-icon nc-send"></i></button>
+                        <button type="button" class="btn btn-success" (click)="finishBatch()">Finish Moderation <i class="nc-icon nc-send"></i></button>
                     </div>
                 </ng-template>
                 <div id="holder"></div>

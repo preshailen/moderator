@@ -11,5 +11,7 @@ export class InstructionsComponent implements OnInit {
 
   ngOnInit() {
   }
-
+	open(url: string) {
+    window.open(url);
+  }
 }

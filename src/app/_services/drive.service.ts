@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { retryBackoff } from 'backoff-rxjs';
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +8,6 @@ import { BehaviorSubject } from 'rxjs';
 
 export class DriveService {
   apiKey = 'AIzaSyBVlg0RWo6AgOUoQ_w396_K2hJAZZNn8Js';
-
   constructor(private http: HttpClient) { }
   getOptions(): {} {
     const headers = new HttpHeaders({
@@ -108,9 +106,6 @@ export class DriveService {
         await result.then(u => data.push(u)).catch(err => reject(err));
       }
 			const body = {
-				batchName: batchName,
-				batchId: parentId,
-				dueDate: dueDate,
 				data: data
 			}
       this.http.post('https://www.googleapis.com/upload/drive/v3/files?uploadType=media', body, this.getOptions()).toPromise().then((l) => {

@@ -14,10 +14,9 @@ import { ErrorInterceptorProvider } from './_services/error.interceptor';
 import { LoginComponent } from './pages/login/login.component';
 import { GoogleLoginProvider, AuthServiceConfig, LoginOpt, SocialLoginModule } from 'angularx-social-login';
 import { AuthGuard } from './_services/auth.guard';
-import { DataResolver } from './_services/data.resolve';
-import { TeacherGuard } from './_services/teacher.guard';
-import { ViewResolver } from './_services/viewResolver';
 import { AuthorizationService } from './_services/auth.service';
+import { DataResolver } from './_services/data.resolve';
+import { PreventChanges } from './_services/prevent-changes.guard';
 
 const googleLoginOptions: LoginOpt = {
   prompt: 'consent',
@@ -49,10 +48,9 @@ export function providConfig() {
   providers: [
     ErrorInterceptorProvider,
 		AuthGuard,
-    DataResolver,
-    TeacherGuard,
-    ViewResolver,
 		AuthorizationService,
+		DataResolver,
+		PreventChanges,
     { provide: AuthServiceConfig, useFactory: providConfig }
   ],
   bootstrap: [AppComponent]

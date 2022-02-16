@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { NgbModalRef, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from 'app/_services/alert.service';
+import { AuthorizationService } from 'app/_services/auth.service';
 import { DriveService } from 'app/_services/drive.service';
 import { ValidatorService } from 'app/_services/validator.service';
 import { PDFJS } from './pdf/pdf';
@@ -17,7 +18,7 @@ export class CreateBatchComponent implements OnInit {
 	batchForm: FormGroup = null;
 	moderators: any[] = [];
 	files: any[] = [];
-  constructor(public dService: DriveService, public alService: AlertService, private modal: NgbModal, public vService: ValidatorService) { }
+  constructor(public dService: DriveService, public alService: AlertService, private modal: NgbModal, public vService: ValidatorService, public aService: AuthorizationService) { }
 
   ngOnInit() {
 		this.initData();
@@ -35,17 +36,16 @@ export class CreateBatchComponent implements OnInit {
 				const config = x.files.find(f => (f as any).name === 'config.eMod');
 				if (config) {
 					this.dService.getFile(config.id).then(c => {
-						console.log(c)
 						for (let r = 0; r < c.moderators.length; r++) {
 							 this.moderators.push(x.files.find(k => (k.mimeType === 'application/vnd.google-apps.folder') && (k.name === c.moderators[r].name)));
 						}
 					}).catch(err => console.log(err));
-					const batches_ = x.files.filter(o => (o.name as string).endsWith('.moderate'));
+					const batches_ = x.files.filter(o => (o.name as string).endsWith('.moderate') && (o.name as string).includes(this.aService.getEmail()));
 					batches_.forEach(element => {
-						const data = element.name.split(';')
+						const data = element.name.split(';');
 						const name = data[0];
 						const moderator = data[1];
-						const dueDate = data[2].substr(0, data[2].indexOf('.moderate'));
+						const dueDate = data[2];
 						this.batches.push(new FormGroup({
 							name: new FormControl(name),
 							moderator: new FormControl(moderator),
@@ -125,7 +125,7 @@ export class CreateBatchComponent implements OnInit {
           files.push(new Blob([new Uint8Array(array)], {type: 'image/png'}));
           fileNames.push(this.files[b].name.replace('.pdf', '.png'));
         }
-				const name = this.newBatchForm.get('name').value + ';' + this.newBatchForm.get('moderator').value.name + ';' + this.newBatchForm.get('dueDate').value;
+				const name = this.newBatchForm.get('name').value + ';' + this.newBatchForm.get('moderator').value.name + ';' + this.newBatchForm.get('dueDate').value + ';' + this.aService.getEmail();
          this.alService.load(this.dService.addFileBatch(name, files, fileNames, this.newBatchForm.get('moderator').value.id, this.newBatchForm.get('dueDate').value)).then(v => {
 					this.close('');
 					this.batchForm = null;

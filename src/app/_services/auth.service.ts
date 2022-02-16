@@ -46,4 +46,12 @@ export class AuthorizationService {
 			}
 		});
 	}
+	getEmail(): string {
+		let email = localStorage.getItem('eModEmail').split('.').join('');
+		email = email.replace('com', '.com');
+		return email;
+	}
+	getCorsFix() {
+		return 'https://presh-cors-fix.herokuapp.com/';
+	}
 }

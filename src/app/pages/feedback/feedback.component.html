@@ -1,16 +1,31 @@
-<div class="row central">
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-       <h2>Feedback</h2>
-      </div>
-      <div *ngIf="comments" class="card-body">
-        <h5>Comments</h5>
-        {{ comments }}
-      </div>
-      <div *ngIf="!comments" class="card-body">
-        No data to display!
-      </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div id="goBack" (click)="goBack()">
+                <i class="nc-icon nc-minimal-left"></i> Go Back
+            </div>
+            <div class="card-header central">
+                <h2>Feedback</h2>
+            </div>
+            <div class="card-body central">
+                <h5>Comments: </h5>
+                <p>{{ comments }}</p>
+                <form *ngIf="mForm" [formGroup]="mForm">
+                    <div>
+                        <h5>Current File: </h5>
+                        <div class="input-item">
+                            <select class="form-control" formControlName="currentFileChosen">
+								<option *ngFor="let item of moderated" [ngValue]="item">{{ item.name }}</option>
+							</select>
+                        </div>
+                    </div>
+                    <div class="pdf-layer">
+                        <div class="pdf-container">
+                            <tui-image-editor [options]="options"></tui-image-editor>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

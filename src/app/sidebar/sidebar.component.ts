@@ -14,7 +14,7 @@ export const ROUTES: RouteInfo[] = [
 	  { path: '/instructions', title: 'Instructions', icon: 'nc-paper', class: '', role: 'Unconfigured' },
 		{ path: '/configure', title: 'Configure', icon: 'nc-settings-gear-65', class: '', role: 'Unconfigured' },
 		{ path: '/create-batch', title: 'Create Batch', icon: 'nc-cloud-upload-94', class: '', role: 'Teacher' },
-		{ path: '/view-feedback', title: 'View Feedback', icon: 'nc-glasses-2', class: '', role: 'Teacher' },
+		{ path: '/feedback-list', title: 'View Feedback', icon: 'nc-glasses-2', class: '', role: 'Teacher' },
     { path: '/moderator-list', title: 'Moderate', icon: 'nc-ruler-pencil', class: '', role: 'Moderator' },
     // { path: '/icons', title: 'Icons', icon: 'nc-diamond', class: ' ', role: 'Unconfigured' },
     { path: '/rt', title: '', icon: '', class: '', role: 'Unconfigured' },

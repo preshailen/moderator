@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from 'app/_services/alert.service';
 import { AuthorizationService } from 'app/_services/auth.service';
 import { DriveService } from 'app/_services/drive.service';
+import { PreventChanges } from 'app/_services/prevent-changes.guard';
+import { Observable } from 'rxjs';
 import { ValidatorService } from 'app/_services/validator.service';
 
 @Component({
@@ -11,7 +13,7 @@ import { ValidatorService } from 'app/_services/validator.service';
   templateUrl: './configure.component.html',
   styleUrls: ['./configure.component.scss', '../../shared/shared.scss']
 })
-export class ConfigureComponent implements OnInit {
+export class ConfigureComponent implements OnInit, PreventChanges {
 	private modalRef: NgbModalRef;
 	configForm: FormGroup;
 	newModeratorForm: FormGroup;
@@ -239,7 +241,6 @@ export class ConfigureComponent implements OnInit {
         name: new FormControl(this.newModeratorForm.get('name').value),
         email: new FormControl(this.newModeratorForm.get('email').value)
       }));
-      this.alService.success('Added Moderator!');
       this.close('');
     }
   }
@@ -248,6 +249,14 @@ export class ConfigureComponent implements OnInit {
 			this.moderators.removeAt(i);
 		}).catch(err => err);
 	}
+	@HostListener('window:beforeunload')
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+		if (this.changed) {
+			return false;
+		} else {
+			return true;
+		}
+  }
 	get role() {
     return this.configForm.get('role') as FormControl;
   }

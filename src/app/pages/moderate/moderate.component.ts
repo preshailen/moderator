@@ -1,10 +1,13 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ToastUiImageEditorComponent } from 'ngx-tui-image-editor';
 import { DriveService } from 'app/_services/drive.service';
 import { AlertService } from 'app/_services/alert.service';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { AuthorizationService } from 'app/_services/auth.service';
+
 @Component({
   selector: 'app-moderate',
   templateUrl: './moderate.component.html',
@@ -26,17 +29,20 @@ export class ModerateComponent implements OnInit, AfterViewInit {
     cssMaxHeight: 500,
     selectionStyle: { cornerSize: 20, rotatingPointOffset: 70 }
   };
-  constructor(private route: ActivatedRoute, private modalService: NgbModal, public drive: DriveService, public as: AlertService) { }
+	public $changed = new BehaviorSubject(false);
+  constructor(public aService: AuthorizationService, private route: ActivatedRoute, private modalService: NgbModal, public dService: DriveService, public alService: AlertService) { }
   ngOnInit() {
-    this.route.data.subscribe(data => {
+		this.route.data.subscribe(data => {
       this.files = data.data['data'];
+			console.log(this.files)
       this.mForm = new FormGroup({
         currentFileChosen: new FormControl()
       });
       this.mForm.get('currentFileChosen').valueChanges.subscribe(b => {
-				console.log(b)
-        this.editor.editorInstance.loadImageFromURL('https://cors-anywhere.herokuapp.com/https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
+				this.$changed.next(false);
+        this.editor.editorInstance.loadImageFromURL(this.aService.getCorsFix() + 'https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
           this.editor.editorInstance.resizeCanvasDimension({ width: (y.newWidth * 0.5), height: y.newHeight });
+					this.editor.editorInstance.on('mousedown', (event, originPointer) => this.$changed.next(true));
         }).catch(err => console.log(err));
       });
     });
@@ -45,11 +51,11 @@ export class ModerateComponent implements OnInit, AfterViewInit {
     document.getElementsByClassName('tui-image-editor-header')[0].remove();
   }
 	goBack() {
-		this.as.navigate('moderator-list');
+		this.alService.navigate('moderator-list');
 	}
   save() {
     if (!this.mForm.get('currentFileChosen').value) {
-      this.as.error('No File Chosen!');
+      this.alService.error('No File Chosen!');
     } else {
       this.route.url.subscribe(p => {
         const blobBin = atob(this.editor.editorInstance.toDataURL().split(',')[1]);
@@ -62,7 +68,7 @@ export class ModerateComponent implements OnInit, AfterViewInit {
         if (!existingFile.name.includes('.annotated.png')) {
           existingFile.name = existingFile.name.replace('.png', '.annotated.png');
         }
-        this.as.load(this.drive.addFileAnnotation(existingFile.id, (blob as File), existingFile.name)).then(u => {
+        this.alService.load(this.dService.addFileAnnotation(existingFile.id, (blob as File), existingFile.name)).then(u => {
           const data = [];
           for (let r = 0; r < this.files.length; r++) {
             if (this.files[r].id === existingFile.id) {
@@ -78,19 +84,22 @@ export class ModerateComponent implements OnInit, AfterViewInit {
               });
             }
           }
-          this.drive.editFile((p[1] as any).path, { data }).then(j => {}).catch(err => console.log(err));
+          this.dService.editFile((p[1] as any).path, { data }).then(j => {
+						this.$changed.next(false);
+						window.location.reload();
+					}).catch(err => console.log(err));
         }).catch(err => console.log(err));
       });
     }
   }
   finish(content: any) {
     if (!(this.files.filter(c => c.name.includes('.annotated.png')).length > 0)) {
-      this.as.error('At least 1 file must be moderated!');
+      this.alService.error('At least 1 file must be moderated!');
     } else {
       this.newModeratorGroup = new FormGroup({
         comments: new FormControl(null, [Validators.minLength(2)])
       });
-      this.modalRef = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'lg', keyboard: false, backdrop: 'static' });
+      this.modalRef = this.modalService.open(content, { scrollable: true, ariaLabelledBy: 'modal-basic-title', size: 'xl', keyboard: false, backdrop: 'static' });
       this.modalRef.result.then((result) => {}, (reason) => {});
     }
   }
@@ -103,7 +112,7 @@ export class ModerateComponent implements OnInit, AfterViewInit {
       this.newModeratorGroup.markAllAsTouched();
     } else {
       this.route.url.subscribe(p => {
-        this.drive.getFileMetadata((p[1] as any).path).then(o => {
+        this.dService.getFileMetadata((p[1] as any).path).then(o => {
           o.name = o.name.replace('.moderate', '.feedback');
           const moderated = [];
           const unmoderated = [];
@@ -119,13 +128,21 @@ export class ModerateComponent implements OnInit, AfterViewInit {
             'unmoderated': unmoderated,
             'comments': this.newModeratorGroup.get('comments').value
           };
-          this.as.load(this.drive.finishModerate(o.id, o.name, data)).then(v => {
+          this.alService.load(this.dService.finishModerate(o.id, o.name, data)).then(v => {
             this.close('');
-            this.as.successThenNav('Successfully Moderated Batch!', '/admin');
+            this.alService.successThenNav('Successfully Moderated Batch!', '/moderator-list');
           });
         });
       });
     }
+  }
+	@HostListener('window:beforeunload')
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+		if (this.$changed.getValue()) {
+			return false;
+		} else {
+			return true;
+		}
   }
   get n() {
     return (this.newModeratorGroup as FormGroup).controls;
