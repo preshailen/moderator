@@ -46,7 +46,7 @@ export class ModerateComponent implements OnInit, AfterViewInit {
 			});
 			setTimeout(() => {
         this.mForm.get('currentFileChosen').setValue(this.files[0]);
-      }, 1000);
+      }, 2000);
     });
   }
   ngAfterViewInit() {

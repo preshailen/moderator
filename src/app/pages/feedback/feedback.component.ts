@@ -38,7 +38,7 @@ export class FeedbackComponent implements OnInit, AfterViewInit {
       });
 			setTimeout(() => {
         this.mForm.get('currentFileChosen').setValue(this.moderated[0]);
-      }, 1000);
+      }, 2000);
     });
   }
 	ngAfterViewInit() {
