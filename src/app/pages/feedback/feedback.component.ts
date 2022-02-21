@@ -36,6 +36,9 @@ export class FeedbackComponent implements OnInit, AfterViewInit {
           this.editor.editorInstance.resizeCanvasDimension({ width: (y.newWidth * 0.5), height: y.newHeight });
         }).catch(err => console.log(err));
       });
+			setTimeout(() => {
+        this.mForm.get('currentFileChosen').setValue(this.moderated[0]);
+      }, 1000);
     });
   }
 	ngAfterViewInit() {

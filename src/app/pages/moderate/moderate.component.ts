@@ -34,22 +34,27 @@ export class ModerateComponent implements OnInit, AfterViewInit {
   ngOnInit() {
 		this.route.data.subscribe(data => {
       this.files = data.data['data'];
-			console.log(this.files)
-      this.mForm = new FormGroup({
-        currentFileChosen: new FormControl()
-      });
-      this.mForm.get('currentFileChosen').valueChanges.subscribe(b => {
+			this.mForm = new FormGroup({
+				currentFileChosen: new FormControl()
+			});
+			this.mForm.get('currentFileChosen').valueChanges.subscribe(b => {
 				this.$changed.next(false);
-        this.editor.editorInstance.loadImageFromURL(this.aService.getCorsFix() + 'https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
-          this.editor.editorInstance.resizeCanvasDimension({ width: (y.newWidth * 0.5), height: y.newHeight });
+				this.editor.editorInstance.loadImageFromURL(this.aService.getCorsFix() + 'https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
+					this.editor.editorInstance.resizeCanvasDimension({ width: (y.newWidth * 0.5), height: y.newHeight });
 					this.editor.editorInstance.on('mousedown', (event, originPointer) => this.$changed.next(true));
-        }).catch(err => console.log(err));
-      });
+				}).catch(err => console.log(err));
+			});
+			setTimeout(() => {
+        this.mForm.get('currentFileChosen').setValue(this.files[0]);
+      }, 1000);
     });
   }
   ngAfterViewInit() {
     document.getElementsByClassName('tui-image-editor-header')[0].remove();
   }
+	/*ngAfterViewChecked() {
+  	this.mForm.get('currentFileChosen').setValue(this.files[0]);
+	}*/
 	goBack() {
 		this.alService.navigate('moderator-list');
 	}

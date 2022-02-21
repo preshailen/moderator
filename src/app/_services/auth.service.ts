@@ -16,7 +16,7 @@ export class AuthorizationService {
 		}
 	}
 	login(): void {
-		this.aService.signIn(GoogleLoginProvider.PROVIDER_ID, {	offline_access: true }).then(h => {
+		this.aService.signIn(GoogleLoginProvider.PROVIDER_ID).then(h => { // {	offline_access: true }).then(h => {
 			this.$loggedIn.next(true);
       localStorage.setItem('eModAuthToken', h.authToken);
 			localStorage.setItem('eModEmail', h.email)
@@ -24,7 +24,7 @@ export class AuthorizationService {
     }).catch(err => this.alService.error(err));
 	}
 	logout(): void {
-		this.aService.signOut(true).then(v => {
+		this.aService.signOut().then(v => {
 			this.$loggedIn.next(false);
 			localStorage.removeItem('eModAuthToken');
 			localStorage.removeItem('eModEmail');

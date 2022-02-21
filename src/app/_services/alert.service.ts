@@ -123,7 +123,7 @@ export class AlertService {
   confirmPageExit(): Promise<boolean> {
     return Swal.fire({
       title: 'Unsaved Changes Alert!',
-      text: 'Changes will be lost',
+      text: 'Click `create` or `edit` to save changes!',
       icon: 'warning',
       confirmButtonColor: 'red',
       confirmButtonText: 'Leave',

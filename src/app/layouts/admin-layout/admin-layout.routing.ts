@@ -20,6 +20,6 @@ export const AdminLayoutRoutes: Routes = [
 		{ path: 'moderate/:id', component: ModerateComponent, canDeactivate: [PreventChanges], resolve: { data: DataResolver } },
 		{ path: 'feedback-list', component: FeedbackListComponent },
 		{ path: 'feedback/:id', component: FeedbackComponent, resolve: { data: DataResolver } },
-    { path: 'icons', component: IconsComponent },
+		{ path: 'icons', component: IconsComponent },
 		{ path: 'logout', component: LogoutComponent }
 ];
