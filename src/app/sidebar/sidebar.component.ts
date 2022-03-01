@@ -16,10 +16,11 @@ export const ROUTES: RouteInfo[] = [
 		{ path: '/create-batch', title: 'Create Batch', icon: 'nc-cloud-upload-94', class: '', role: 'Teacher' },
 		{ path: '/feedback-list', title: 'View Feedback', icon: 'nc-glasses-2', class: '', role: 'Teacher' },
     { path: '/moderator-list', title: 'Moderate', icon: 'nc-ruler-pencil', class: '', role: 'Moderator' },
+		{ path: '/permissions-error', title: 'Permissions Error', icon: 'nc-ruler-pencil', class: '', role: 'Error' },
     // { path: '/icons', title: 'Icons', icon: 'nc-diamond', class: ' ', role: 'Unconfigured' },
     { path: '/rt', title: '', icon: '', class: '', role: 'Unconfigured' },
 		{ path: '/rt', title: '', icon: '', class: '', role: 'Unconfigured' },
-		{ path: '/logout', title: 'Logout', icon: 'nc-button-power', class: '', role: 'Unconfigured' },
+		{ path: '/logout', title: 'Logout', icon: 'nc-button-power', class: '', role: 'All' },
 ];
 
 @Component({
@@ -36,11 +37,13 @@ export class SidebarComponent implements OnInit {
 			this.aService.initRole();
 			this.aService.$role.subscribe(p => {
 				if (p === 'Unconfigured') {
-					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured');
+					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured' || menuItem.role === 'All');
 				} else if (p === 'Teacher') {
-					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured' || menuItem.role === 'Teacher')
+					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured' || menuItem.role === 'Teacher' || menuItem.role === 'All');
 				} else if (p === 'Moderator') {
-					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured' || menuItem.role === 'Moderator')
+					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Unconfigured' || menuItem.role === 'Moderator' || menuItem.role === 'All');
+				} else if (p === 'Error') {
+					this.menuItems = ROUTES.filter(menuItem => menuItem.role === 'Error' || menuItem.role === 'All')
 				}
 			})
     }

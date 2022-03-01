@@ -251,7 +251,9 @@ export class ConfigureComponent implements OnInit, PreventChanges {
 	}
 	@HostListener('window:beforeunload')
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-		if (this.changed) {
+		if (this.changed && this.aService.$role.getValue() === 'Error') {
+			return true;
+		}	else if (this.changed) {
 			return false;
 		} else {
 			return true;

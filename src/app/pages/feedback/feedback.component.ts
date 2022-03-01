@@ -32,9 +32,9 @@ export class FeedbackComponent implements OnInit, AfterViewInit {
         currentFileChosen: new FormControl()
       });
 			this.mForm.get('currentFileChosen').valueChanges.subscribe(b => {
-        this.editor.editorInstance.loadImageFromURL(this.aService.getCorsFix() + 'https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
+        this.alService.load(this.editor.editorInstance.loadImageFromURL(this.aService.getCorsFix() + 'https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
           this.editor.editorInstance.resizeCanvasDimension({ width: (y.newWidth * 0.5), height: y.newHeight });
-        }).catch(err => console.log(err));
+        }).catch(err => console.log(err)));
       });
 			setTimeout(() => {
         this.mForm.get('currentFileChosen').setValue(this.moderated[0]);

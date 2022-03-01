@@ -19,6 +19,11 @@ export class ErrorInterceptor implements HttpInterceptor {
 									this.as.errorThenNav('Session expired!', '/login');
                   return throwError(error.statusText);
                 }
+								if (error.status === 403) {
+									this.auService.$role.next('Error');
+									this.as.errorThenNav('Insufficient permissions!', '/permissions-error');
+									return throwError(error.statusText);
+								}
                 const applicationError = error.headers.get('Application-Error');
                 if (applicationError) {
                     return throwError(applicationError);

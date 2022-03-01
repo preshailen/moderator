@@ -123,7 +123,7 @@ export class AlertService {
   confirmPageExit(): Promise<boolean> {
     return Swal.fire({
       title: 'Unsaved Changes Alert!',
-      text: 'Click `create` or `edit` to save changes!',
+      text: 'Click `save` to save changes!',
       icon: 'warning',
       confirmButtonColor: 'red',
       confirmButtonText: 'Leave',
@@ -147,5 +147,28 @@ export class AlertService {
     } else {
       this.router.navigate([path]);
     }
+  }
+	confirmModeration(): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      Swal.fire({
+        title: 'Confirm moderation',
+        text: 'Are you sure that the moderation is complete?',
+        icon: 'warning',
+        confirmButtonColor: 'red',
+        confirmButtonText: 'Moderate!',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        focusConfirm: true,
+        reverseButtons: true
+      }).then(
+        x => {
+          if (x.value) {
+            resolve(true);
+          } else {
+            reject(false);
+          }
+        }
+      );
+    });
   }
 }

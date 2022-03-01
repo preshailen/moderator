@@ -72,10 +72,10 @@
                             </ng-template>
                         </div>
                         <div>
-                            <button *ngIf="!configured.value" type="button" (click)="createConfiguration()" class="btn btn-success">Create Configuration <i class="nc-icon nc-settings"></i></button>
+                            <button *ngIf="!configured.value" type="button" (click)="createConfiguration()" class="btn btn-success">Save Configuration <i class="nc-icon nc-settings"></i></button>
                         </div>
                         <div>
-                            <button *ngIf="configured.value && changed" type="button" (click)="editConfiguration()" class="btn btn-success">Edit Configuration <i class="nc-icon nc-settings"></i></button>
+                            <button *ngIf="configured.value && changed" type="button" (click)="editConfiguration()" class="btn btn-success">Save Configuration <i class="nc-icon nc-settings"></i></button>
                         </div>
                     </div>
                 </form>

@@ -136,11 +136,11 @@ export class DriveService {
   deleteAll(id: string, ids: any[]) {
     const result = new Promise(async (resolve, reject) => {
       for (let r = 0; r < ids.length; r++) {
-        this.http.delete('https://www.googleapis.com/drive/v3/files/' + ids[r].id, this.getOptions()).pipe(retryBackoff({ initialInterval: 100, maxRetries: 12, resetOnSuccess: true })).subscribe(i => {
+				this.http.delete('https://www.googleapis.com/drive/v3/files/' + ids[r], this.getOptions()).pipe(retryBackoff({ initialInterval: 100, maxRetries: 12, resetOnSuccess: true })).subscribe(i => {
         }, err => reject(err));
       }
       this.http.delete('https://www.googleapis.com/drive/v3/files/' + id, this.getOptions()).pipe(retryBackoff({ initialInterval: 100, maxRetries: 12, resetOnSuccess: true })).subscribe(i => {
-        resolve(i);
+        resolve(id);
       }, err => reject(err));
     });
     return result;

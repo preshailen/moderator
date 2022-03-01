@@ -1,13 +1,10 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-
 import { SidebarModule } from './sidebar/sidebar.module';
 import { NavbarModule} from './shared/navbar/navbar.module';
-
 import { AppComponent } from './app.component';
 import { AppRoutes } from './app.routing';
-
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorInterceptorProvider } from './_services/error.interceptor';
@@ -20,15 +17,18 @@ import { PreventChanges } from './_services/prevent-changes.guard';
 
 const googleLoginOptions: LoginOpt = {
   prompt: 'consent',
-  scope: 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.metadata https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.photos.readonly https://www.googleapis.com/auth/drive.readonly'
+  scope: 'https://www.googleapis.com/auth/drive'
 };
+
 const config = new AuthServiceConfig([{
   id: GoogleLoginProvider.PROVIDER_ID,
   provider: new GoogleLoginProvider('991734157670-5vj2she2npal2m9bv4vobd5btd8geps8.apps.googleusercontent.com', googleLoginOptions)
 }]);
+
 export function providConfig() {
   return config;
 }
+
 @NgModule({
   declarations: [
     AppComponent,

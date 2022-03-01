@@ -39,10 +39,10 @@ export class ModerateComponent implements OnInit, AfterViewInit {
 			});
 			this.mForm.get('currentFileChosen').valueChanges.subscribe(b => {
 				this.$changed.next(false);
-				this.editor.editorInstance.loadImageFromURL(this.aService.getCorsFix() + 'https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
+				this.alService.load(this.editor.editorInstance.loadImageFromURL(this.aService.getCorsFix() + 'https://drive.google.com/uc?id=' + b.id, 'workingPic').then(y => {
 					this.editor.editorInstance.resizeCanvasDimension({ width: (y.newWidth * 0.5), height: y.newHeight });
 					this.editor.editorInstance.on('mousedown', (event, originPointer) => this.$changed.next(true));
-				}).catch(err => console.log(err));
+				}).catch(err => console.log(err)));
 			});
 			setTimeout(() => {
         this.mForm.get('currentFileChosen').setValue(this.files[0]);
@@ -52,9 +52,6 @@ export class ModerateComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     document.getElementsByClassName('tui-image-editor-header')[0].remove();
   }
-	/*ngAfterViewChecked() {
-  	this.mForm.get('currentFileChosen').setValue(this.files[0]);
-	}*/
 	goBack() {
 		this.alService.navigate('moderator-list');
 	}
@@ -116,7 +113,8 @@ export class ModerateComponent implements OnInit, AfterViewInit {
     if (this.newModeratorGroup.invalid) {
       this.newModeratorGroup.markAllAsTouched();
     } else {
-      this.route.url.subscribe(p => {
+			this.alService.confirmModeration().then(p => {
+				this.route.url.subscribe(p => {
         this.dService.getFileMetadata((p[1] as any).path).then(o => {
           o.name = o.name.replace('.moderate', '.feedback');
           const moderated = [];
@@ -139,11 +137,14 @@ export class ModerateComponent implements OnInit, AfterViewInit {
           });
         });
       });
+			}).catch(err => err);
     }
   }
 	@HostListener('window:beforeunload')
   canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-		if (this.$changed.getValue()) {
+		if (this.$changed.getValue() && this.aService.$role.getValue() === 'Error') {
+			return true;
+		} else if (this.$changed.getValue()) {
 			return false;
 		} else {
 			return true;

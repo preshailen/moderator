@@ -16,10 +16,10 @@ export class AuthorizationService {
 		}
 	}
 	login(): void {
-		this.aService.signIn(GoogleLoginProvider.PROVIDER_ID).then(h => { // {	offline_access: true }).then(h => {
+		this.aService.signIn(GoogleLoginProvider.PROVIDER_ID).then(h => {
 			this.$loggedIn.next(true);
       localStorage.setItem('eModAuthToken', h.authToken);
-			localStorage.setItem('eModEmail', h.email)
+			localStorage.setItem('eModEmail', h.email);
       this.alService.successThenNav('Welcome ' + h.name + '!', '/instructions');
     }).catch(err => this.alService.error(err));
 	}
@@ -29,7 +29,7 @@ export class AuthorizationService {
 			localStorage.removeItem('eModAuthToken');
 			localStorage.removeItem('eModEmail');
 			this.alService.successThenNav('Logged Out', '/login');
-    }).catch(err => { console.log(err) });
+    }).catch(err => this.alService.error(err));
 	}
 	refreshToken(): void {
 	//	this.auth.refreshAuthToken(GoogleLoginProvider.PROVIDER_ID);

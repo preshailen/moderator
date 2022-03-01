@@ -36,6 +36,7 @@ export class CreateBatchComponent implements OnInit {
 				const config = x.files.find(f => (f as any).name === 'config.eMod');
 				if (config) {
 					this.dService.getFile(config.id).then(c => {
+						this.moderators = [];
 						for (let r = 0; r < c.moderators.length; r++) {
 							 this.moderators.push(x.files.find(k => (k.mimeType === 'application/vnd.google-apps.folder') && (k.name === c.moderators[r].name)));
 						}
@@ -76,7 +77,7 @@ export class CreateBatchComponent implements OnInit {
             for (let p = 1; p <= pdf.numPages; p++) {
               promises.push(pdf.getPage(p));
             }
-            this.alService.load(Promise.all(promises)).then(pages => {
+            Promise.all(promises).then(pages => {
               const renders = [];
               for (let g = 0; g < pages.length; g++) {
                 const canvas = document.createElement('canvas');
@@ -87,7 +88,7 @@ export class CreateBatchComponent implements OnInit {
                 canvas.width = viewport.width;
                 renders.push(pages[g].render({ canvasContext: canvas.getContext('2d'), viewport: viewport }));
               }
-              this.alService.load(Promise.all(renders)).then(p => {
+              Promise.all(renders).then(p => {
                 const canvi = document.getElementsByClassName(v.toString());
                 let totalHeight = 0;
                 for (let g = 0; g < canvi.length; g++) {
@@ -143,7 +144,8 @@ export class CreateBatchComponent implements OnInit {
 	delete(id: number): void {
 		this.alService.confirmDelete('This will delete all files in the batch!').then(b => {
 			this.dService.getFile(this.batches.at(id).get('id').value).then(p => {
-				this.alService.load(this.dService.deleteAll(this.batches.at(id).get('id').value, p.data)).then(f => this.batches.removeAt(id)).catch(err => err)
+				const ids: [] = p.data.map(p => p.id);
+			  this.alService.load(this.dService.deleteAll(this.batches.at(id).get('id').value, ids)).then(f => this.batches.removeAt(id)).catch(err => err)
 			})
 		}).catch(err => err)
 	}

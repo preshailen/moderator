@@ -29,7 +29,7 @@ export class FeedbackListComponent implements OnInit {
 					id: new FormControl(o.id),
 				}));
 			});
-		}).catch(err => console.log(err))
+		}).catch(err => console.log(err));
   }
 	view(id: number) {
 		this.alService.navigate('feedback', this.batches.at(id).get('id').value);
@@ -37,7 +37,7 @@ export class FeedbackListComponent implements OnInit {
   delete(id: number) {
     this.alService.confirmDelete('Are you sure?').then(b => {
 			const batchId = this.batches.at(id).get('id').value;
-      this.dService.getFile(batchId).then(f => {
+			this.dService.getFile(batchId).then(f => {
         const moderated: [] = f.moderated;
         const unmoderated: [] = f.unmoderated;
         const ids = [];
@@ -47,7 +47,7 @@ export class FeedbackListComponent implements OnInit {
         for (let g = 0; g < unmoderated.length; g++) {
           ids.push((unmoderated[g] as any).id);
         }
-        this.alService.load(this.dService.deleteAll(batchId, ids)).then(p => {
+				this.alService.load(this.dService.deleteAll(batchId, ids)).then(p => {
           this.batches.removeAt(id);
         }).catch(err => console.log(err));
       }).catch(err => console.log(err));
