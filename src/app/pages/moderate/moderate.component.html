@@ -23,13 +23,27 @@
                     <div class="modal-body">
                         <form [formGroup]="newModeratorGroup" class="row">
                             <div class="form col-md-12">
-                                <div class="form-group">
+                                <div class="form-group" *ngIf="!n.prewritten.value">
                                     <div class="single">
                                         <label for="comments"><b>Comments: </b></label>
                                         <textarea type="text" class="form-control" formControlName="comments" id="comments" minlength="2" required></textarea>
                                     </div>
                                     <div *ngIf="n.comments.errors?.minlength && (n.comments.touched || n.comments.dirty)" class="messages text-danger">Invalid Length!</div>
                                     <div *ngIf="n.comments.errors?.required && (n.comments.touched || n.comments.dirty)" class="messages text-danger">Required!</div>
+                                </div>
+                                <div class="form-group" *ngIf="n.prewritten.value">
+                                    <div class="single">
+                                        <label for="comments"><b>Comments: </b></label>
+                                        <select class="form-control" formControlName="comments" id="comments">
+																				<option *ngFor="let comment of comments" [ngValue]="comment">{{ comment }}</option>
+																			</select>
+                                    </div>
+                                </div>
+                                <div class="form-group" *ngIf="comments.length > 0">
+                                    <div class="single">
+                                        <label for="prewritten"><b>Use prewritten comment: </b></label>
+                                        <input type="checkbox" formControlName="prewritten" id="prewritten" />
+                                    </div>
                                 </div>
                             </div>
                         </form>

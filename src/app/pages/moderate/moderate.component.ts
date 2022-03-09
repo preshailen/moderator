@@ -29,9 +29,11 @@ export class ModerateComponent implements OnInit, AfterViewInit {
     cssMaxHeight: 500,
     selectionStyle: { cornerSize: 20, rotatingPointOffset: 70 }
   };
+	comments: [] = null;
 	public $changed = new BehaviorSubject(false);
   constructor(public aService: AuthorizationService, private route: ActivatedRoute, private modalService: NgbModal, public dService: DriveService, public alService: AlertService) { }
   ngOnInit() {
+		this.initComments();
 		this.route.data.subscribe(data => {
       this.files = data.data['data'];
 			this.mForm = new FormGroup({
@@ -49,6 +51,18 @@ export class ModerateComponent implements OnInit, AfterViewInit {
       }, 2000);
     });
   }
+	initComments(): void {
+		this.dService.getFiles().then(x => {
+			if (x.files.length) {
+				const config = x.files.find(f => (f as any).name === this.aService.getEmail() + '.comments.eMod');
+				if (config) {
+					this.dService.getFile(config.id).then(l => {
+						this.comments = l.comments;
+					}).catch(err => err);
+				}
+			}
+		}).catch(err => err);
+	}
   ngAfterViewInit() {
     document.getElementsByClassName('tui-image-editor-header')[0].remove();
   }
@@ -99,7 +113,8 @@ export class ModerateComponent implements OnInit, AfterViewInit {
       this.alService.error('At least 1 file must be moderated!');
     } else {
       this.newModeratorGroup = new FormGroup({
-        comments: new FormControl(null, [Validators.minLength(2)])
+        comments: new FormControl(null, [Validators.minLength(2)]),
+				prewritten: new FormControl(false)
       });
       this.modalRef = this.modalService.open(content, { scrollable: true, ariaLabelledBy: 'modal-basic-title', size: 'xl', keyboard: false, backdrop: 'static' });
       this.modalRef.result.then((result) => {}, (reason) => {});

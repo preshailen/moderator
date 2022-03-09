@@ -21,7 +21,7 @@ import { ModerateComponent } from 'app/pages/moderate/moderate.component';
 import { CreateBatchComponent } from 'app/pages/create-batch/create-batch.component';
 import { LogoutComponent } from 'app/pages/logout/logout.component';
 import { PermissionsErrorComponent } from 'app/pages/permissions-error/permissions-error.component';
-
+import { CommentsComponent } from 'app/pages/comments/comments.component';
 
 @NgModule({
   imports: [
@@ -43,7 +43,8 @@ import { PermissionsErrorComponent } from 'app/pages/permissions-error/permissio
 		CreateBatchComponent,
 		ModerateListComponent,
 		LogoutComponent,
-		PermissionsErrorComponent
+		PermissionsErrorComponent,
+		CommentsComponent
   ]
 })
 

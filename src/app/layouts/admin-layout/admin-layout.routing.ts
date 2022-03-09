@@ -11,6 +11,7 @@ import { LogoutComponent } from 'app/pages/logout/logout.component';
 import { PreventChanges } from 'app/_services/prevent-changes.guard';
 import { DataResolver } from 'app/_services/data.resolve';
 import { PermissionsErrorComponent } from 'app/pages/permissions-error/permissions-error.component';
+import { CommentsComponent } from 'app/pages/comments/comments.component';
 
 export const AdminLayoutRoutes: Routes = [
 	  { path: 'instructions', component: InstructionsComponent },
@@ -21,6 +22,7 @@ export const AdminLayoutRoutes: Routes = [
 		{ path: 'feedback-list', component: FeedbackListComponent },
 		{ path: 'feedback/:id', component: FeedbackComponent, resolve: { data: DataResolver } },
 		{ path: 'permissions-error', component: PermissionsErrorComponent },
+		{ path: 'comments', component: CommentsComponent },
 		{ path: 'icons', component: IconsComponent },
 		{ path: 'logout', component: LogoutComponent }
 ];
